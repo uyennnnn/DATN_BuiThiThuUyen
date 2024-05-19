@@ -1,0 +1,19 @@
+name: Laravel
+
+on:
+  push:
+    branches: [ "develop" ]
+
+jobs:
+   build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+    - name: executing remote ssh commands using password
+      uses: appleboy/ssh-action@v1.0.3
+      with:
+        host: ${{ secrets.HOST }}
+        username: ${{ secrets.USERNAME }}
+        password: ${{ secrets.PASSWORD }}
+        port: ${{ secrets.PORT }}
+        script: deploy beta.spispi.net develop
