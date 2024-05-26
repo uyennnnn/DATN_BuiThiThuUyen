@@ -12,50 +12,50 @@ const toggleDrawer = () => {
 
 const listMenu = [
     {
-        name: 'ホーム',
+        name: 'Trang chủ',
         routeName: 'home',
         outSystem: false,
     },
     {
-        name: '店舗管理',
+        name: 'Quản lý cửa hàng',
         routeName: 'shop.edit',
         outSystem: false,
     },
     {
-        name: '従業員管理',
+        name: 'Quản lý nhân viên',
         routeName: 'users.index',
         outSystem: false,
     },
     {
-        name: '勤怠データ',
+        name: 'Dữ liệu chấm công',
         routeName: 'attendance',
     },
     {
-        name: 'QRコード',
+        name: 'QR Code',
         routeName: 'qrCode',
     },
     {
-        name: 'サポート・お問い合わせ',
+        name: 'Liên hệ',
         routeName: 'contact',
         outSystem: true,
     },
     {
-        name: '利用規約',
+        name: 'Điều khoản sử dụng',
         directLink: 'https://www.notion.so/nazori/607740c95cdd467a9d80008a89cf7c05?pvs=4',
         outSystem: true,
     },
     {
-        name: 'プライバシーポリシー',
+        name: 'Chính sách bảo mật',
         directLink: 'https://www.notion.so/nazori/5281a635bbd54c1996a4d0f79384350c?pvs=4',
         outSystem: true,
     },
     {
-        name: '特定商法に基づく表示',
+        name: 'Thông báo theo luật kinh doanh',
         directLink: 'https://www.notion.so/nazori/e8ef0dc76f984ac78c1525c0a6964f8d?pvs=4',
         outSystem: true,
     },
     {
-        name: 'ログアウト',
+        name: 'Đăng xuất',
         routeName: 'get_logout',
     },
 ]

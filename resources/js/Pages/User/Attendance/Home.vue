@@ -234,7 +234,7 @@ const listPages = [
             <div class="mb-9">
                 <div class="flex items-center justify-center mt-7 mb-2 font-bold cursor-default"
                     @click="displayMonthStatus">
-                    <h4 class="text-[#286fee]">今月の現在までの勤務状況</h4>
+                    <h4 class="text-[#286fee]">Tình trạng làm việc trong tháng</h4>
                     <div v-if="monthStatus">
                         <DropdownIcon />
                     </div>
@@ -245,20 +245,20 @@ const listPages = [
                 <div v-show="monthStatus">
                     <div class="grid grid-cols-3 text-sm">
                         <div class="col-span-1 flex items-center justify-center border border-gray-200 py-2.5">
-                            出勤日数
+                            Số ngày làm việc
                         </div>
                         <div
                             class="col-span-2 border border-gray-200 bg-white py-2  flex justify-center items-center gap-1">
                             <div class="text-lg font-semibold">{{ dayWorking }}</div>
                             <div class="text-[10px] mt-2 text-gray-600">
-                                日
+                                ngày
                             </div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-3 text-sm">
                         <div class="col-span-1 flex items-center justify-center border border-gray-200 py-2.5">
-                            勤務時間
+                            Thời gian làm việc
                         </div>
                         <div
                             class="col-span-2 border border-gray-200 bg-white py-2  flex justify-center items-center gap-1">
@@ -266,20 +266,20 @@ const listPages = [
                                 {{ workingTime.hours }}
                             </div>
                             <div class="text-[10px] mt-2 text-gray-600">
-                                時間
+                                giờ
                             </div>
                             <div class="text-lg font-semibold">
                                 {{ workingTime.minutes }}
                             </div>
                             <div class="text-[10px] mt-2 text-gray-600">
-                                分
+                                phút
                             </div>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-3 text-sm">
                         <div class="col-span-1 flex items-center justify-center border border-gray-200 py-2.5">
-                            想定給与
+                            Lương dự kiến
                         </div>
                         <div
                             class="col-span-2 border border-gray-200 bg-white py-2  flex justify-center items-center gap-1">
@@ -295,7 +295,7 @@ const listPages = [
             <div class="mb-9">
                 <div class="flex items-center justify-center mt-7 mb-2 font-bold cursor-default"
                     @click="displayDayStatus">
-                    <h4 class="text-[#286fee]">今日の勤務状況</h4>
+                    <h4 class="text-[#286fee]">Tình trạng làm việc trong ngày</h4>
                     <div v-if="dayStatus">
                         <DropdownIcon />
                     </div>
@@ -307,7 +307,7 @@ const listPages = [
                 <div v-show="dayStatus">
                     <div class="grid grid-cols-3 text-sm">
                         <div class="col-span-1 flex items-center justify-center border border-gray-200 py-2.5">
-                            勤務開始時刻
+                            Thời gian bắt đầu làm việc
                         </div>
 
                         <div v-if="mode == NOT_CHECKED_IN"
@@ -316,7 +316,7 @@ const listPages = [
                                 0
                             </div>
                             <div class="text-[10px] mt-2 text-gray-600">
-                                分
+                                phút
                             </div>
                         </div>
 
@@ -326,13 +326,13 @@ const listPages = [
                                 {{ checkInTime.hours }}
                             </div>
                             <div class="text-[10px] mt-2 text-gray-600">
-                                時
+                                giờ
                             </div>
                             <div class="text-lg font-semibold">
                                 {{ checkInTime.minutes }}
                             </div>
                             <div class="text-[10px] mt-2 text-gray-600">
-                                分
+                                phút
                             </div>
                         </div>
                     </div>
@@ -340,7 +340,7 @@ const listPages = [
                     <div class="grid grid-cols-3 text-sm" v-if="todayBreakTimes.length">
                         <div class="col-span-1 flex items-center justify-center border border-gray-200 py-2.5 cursor-default"
                             @click="displayBreakStatus">
-                            合計休憩時間
+                            Tổng thời gian nghỉ
                         </div>
                         <div class="col-span-2 border border-gray-200 bg-white py-2 flex items-center"
                             @click="displayBreakStatus">
@@ -349,13 +349,13 @@ const listPages = [
                                     {{ todayTotalBreakTime.hours }}
                                 </div>
                                 <div class="text-[10px] mt-2 text-gray-600">
-                                    時間
+                                    giờ
                                 </div>
                                 <div class="text-lg font-semibold px-1">
                                     {{ todayTotalBreakTime.minutes }}
                                 </div>
                                 <div class="text-[10px] mt-2 text-gray-600">
-                                    分
+                                    phút
                                 </div>
                             </div>
                             <div v-if="breakStatus">
@@ -395,35 +395,35 @@ const listPages = [
                 </div>
             </div>
 
-            <PageTitle title="勤怠打刻" />
+            <PageTitle title="CHẤM CÔNG" />
 
             <Clock :clockHours="clockHours" :clockMinutes="clockMinutes" :clockSeconds="clockSeconds"
                 :clockDate="clockDate">
             </Clock>
 
             <div class="mt-5">
-                <AttendanceItem :label="'勤務先'">{{ shopName }}</AttendanceItem>
-                <AttendanceItem :label="'従業員名'" :textColor="'#286fee'">{{ user.name }}</AttendanceItem>
+                <AttendanceItem :label="'Nơi làm việc'">{{ shopName }}</AttendanceItem>
+                <AttendanceItem :label="'Tên nhân viên'" :textColor="'#286fee'">{{ user.name }}</AttendanceItem>
             </div>
 
             <div class="flex mt-4 py-5 gap-3 justify-center pb-8 ">
 
                 <SecondaryButton @click="beforeChangePage('checkIn')"
                     class="text-center h-full whitespace-nowrap w-1/2 py-6" v-if="isActiveButton('CHECK_IN')">
-                    勤務開始
+                    Bắt đầu làm việc
                 </SecondaryButton>
 
                 <LightButton class="text-center h-full whitespace-nowrap w-1/2 py-6" v-else>
-                    勤務開始
+                    Bắt đầu làm việc
                 </LightButton>
 
                 <PrimaryButton @click="beforeChangePage('checkOut')"
                     class="text-center h-full whitespace-nowrap w-1/2 py-6" v-if="isActiveButton('CHECK_OUT')">
-                    勤務終了
+                    Kết thúc làm việc
                 </PrimaryButton>
 
                 <LightButton class="text-center h-full whitespace-nowrap w-1/2 py-6" v-else>
-                    勤務終了
+                    Kết thúc làm việc
                 </LightButton>
 
 
@@ -432,16 +432,16 @@ const listPages = [
             <div class="pb-10">
                 <WarningButton @click="beforeChangePage('startBreak')"
                     class="text-center h-full whitespace-nowrap w-full py-6" v-if="isActiveButton('START_BREAK')">
-                    休憩開始
+                    Bắt đầu nghỉ giải lao
                 </WarningButton>
 
                 <PrimaryButton @click="beforeChangePage('endBreak')"
                     class="text-center h-full whitespace-nowrap w-full py-6" v-else-if="isActiveButton('END_BREAK')">
-                    休憩終了
+                    Kết thúc nghỉ giải lao
                 </PrimaryButton>
 
                 <LightButton class="text-center h-full whitespace-nowrap w-full py-6" v-else>
-                    休憩開始
+                    Bắt đầu nghỉ giải lao
                 </LightButton>
             </div>
         </div>

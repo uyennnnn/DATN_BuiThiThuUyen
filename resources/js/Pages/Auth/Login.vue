@@ -46,16 +46,11 @@ const tooglePassword = () => {
     <GuestLayout>
         <Head title="Log in" />
 
-        <PageTitle :title="isAdminLogin ? '管理者ログイン' : '従業員ログイン'"/>
+        <PageTitle :title="isAdminLogin ? 'ĐĂNG NHẬP QUẢN TRỊ VIÊN' : 'ĐĂNG NHẬP'"/>
 
         <div>
-            <div v-if="form.errors.email || form.errors.password" class="text-[12px] text-red-600 text-center mb-3">
-                メールアドレス
-                <span class="text-gray-800">か</span>
-                パスワード
-                <span class="text-gray-800">に</span>
-                <span class="font-semibold text-[#f05871]">誤り</span>
-                <span class="text-gray-800">があります</span>
+            <div v-if="form.errors.email || form.errors.password" class="text-[13px] text-red-600 text-center mb-3">
+                <span>Email hoặc số điện thoại không đúng</span>
             </div>
 
             <form @submit.prevent="submit">
@@ -64,7 +59,7 @@ const tooglePassword = () => {
                         class="mt-1 block w-full"
                         name="email"
                         v-model="form.email"
-                        placeholder="メールアドレス"
+                        placeholder="Email"
                         :error="form.errors.email"
                         autocomplete="new-email"
                         autofocus
@@ -78,7 +73,7 @@ const tooglePassword = () => {
                         name="password"
                         v-model="form.password"
                         :error="form.errors.email"
-                        placeholder="パスワード"
+                        placeholder="Mật khẩu"
                         autocomplete="new-password"
                     />
 
@@ -94,12 +89,12 @@ const tooglePassword = () => {
                         :href="route('password.request')"
                         class="text-xs text-[#286fee]"
                     >
-                        パスワードをお忘れの方はこちら
+                        Quên mật khẩu
                     </Link>
                 </div>
                 <div class="mt-7 flex justify-center">
                     <SecondaryButton type="submit" class="text-center py-4 !px-16 mt-2" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                        ログイン
+                       Đăng nhập
                     </SecondaryButton>
                 </div>
             </form>

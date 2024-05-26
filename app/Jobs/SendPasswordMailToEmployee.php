@@ -33,7 +33,7 @@ class SendPasswordMailToEmployee extends BaseJob
     {
         $this->config();
 
-        $storeName = Option::get('name', 'shop A', $this->domain);
+        $storeName = Option::get('name', 'Cute Shop', $this->domain);
         $user = User::find($this->userId);
         if (! $user) {
             return;

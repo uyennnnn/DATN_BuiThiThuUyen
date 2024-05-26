@@ -12,43 +12,43 @@ import { Head, Link } from '@inertiajs/vue3';
 
 const listMenuItems = [
     {
-        name: '店舗管理',
+        name: 'Quản lý cửa hàng',
         icon: StoreIcon,
         routeName: 'shop.edit',
         disable: false
     },
     {
-        name: '従業員管理',
+        name: 'Quản lý nhân viên',
         icon: FaceIdIcon,
         routeName: 'users.index',
         disable: false
     },
     {
-        name: '給与計算',
+        name: 'Tính lương',
         icon: CurrencyIcon,
         routeName: '',
         disable: true
     },
     {
-        name: '勤怠データ',
+        name: 'Dữ liệu chấm công',
         icon: CalendarIcon,
         routeName: 'attendance',
         disable: false
     },
     {
-        name: 'QRコード',
+        name: 'QR Code',
         icon: QRCodeIcon,
         routeName: 'qrCode',
         disable: false
     },
     {
-        name: 'サポート',
+        name: 'Liên hệ',
         icon: CommentIcon,
         routeName: 'contact',
         disable: false
     },
     {
-        name: 'ログアウト',
+        name: 'Đăng xuất',
         icon: LogoutIcon,
         routeName: 'get_logout',
         disable: false,

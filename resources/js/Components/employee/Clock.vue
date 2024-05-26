@@ -6,7 +6,7 @@ const props = defineProps(['clockHours', 'clockMinutes', 'clockSeconds', 'clockD
 
 <template>
     <div class="flex gap-2 items-center justify-center text-[11px] text-gray-600">
-        <div>現在の時刻</div>
+        <div></div>
         <div>{{ clockDate }}</div>
     </div>
     <div class="flex gap-2 items-center justify-center font-semibold font">
