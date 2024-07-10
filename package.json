@@ -22,6 +22,7 @@
         "date-fns": "^3.6.0",
         "exceljs": "^4.4.0",
         "file-saver": "^2.0.5",
+        "moment": "^2.30.1",
         "vue-month-picker": "^1.7.2",
         "vue3-spinners": "^1.2.2",
         "xlsx": "^0.18.5"

@@ -4,7 +4,7 @@
             <tbody class="bg-white divide-y divide-gray-200">
                 <tr>
                     <td colspan="6" class="!text-left px-6 py-4 whitespace-nowrap text-sm text-gray-900 bg-[#cfcfd0]">
-                        {{ selectedDate }}勤怠
+                        {{ selectedDate }}
                     </td>
                 </tr>
                 <tr v-for="i in countRow" :key="i" :style="`background-color: ${  i == 7 ? '#cfcfd0' : i%2 != 0 ? '#e6e6e6' : '#fff'}`">
@@ -13,7 +13,7 @@
                         :style="`background-color: ${positionArr[attendanceData[j-1][i-1] - 1].color ?? '#b3b3b3'}`"
                         colspan="4">{{ positionArr[attendanceData[j-1][i-1] - 1].name }}</td>
 
-                        <template v-else-if="i > 6 & j > 1" >
+                        <template v-else-if="i > 7 & j > 1" >
                             <td class="px-2 py-4 whitespace-nowrap text-sm text-gray-900" :class="{ 'text-red-500': attendanceData[j-1][i-1][4] == 1 }" >{{ attendanceData[j-1][i-1][0] }}</td>
                             <td class="px-2 py-4 whitespace-nowrap text-sm text-gray-900" :class="{ 'text-red-500': attendanceData[j-1][i-1][5] == 1 }"> {{ attendanceData[j-1][i-1][1] }} </td>
                             <td class="px-2 py-4 whitespace-nowrap text-sm text-gray-900">
@@ -27,6 +27,7 @@
                         <td v-else class="px-6 py-4 whitespace-nowrap text-sm text-gray-900" colspan="4"
                         :style="`background-color: ${i == 5 ? '#e0ffea' : i == 6 ? '#ddf1ff' : i == 7 ? '#cfcfd0' : i > 6 && i %2  != 0 || i == 2 ? '#e6e6e6' : '#fff' }`"
                         >{{ attendanceData[j-1][i-1] }}</td>
+                        
                     </template>
                 </tr>
             </tbody>
@@ -85,9 +86,5 @@ export default {
 td {
     border: 1px solid #ccc;
     text-align: center;
-    /* display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 50px;   */
 }
 </style>

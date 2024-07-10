@@ -66,6 +66,7 @@ Route::middleware(['admin.auth', 'verified'])->group(function () {
     Route::get('/qrcode/image', [QRCodeController::class, 'image'])->name('qrCode.image');
 
     Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance');
+    Route::get('/wage', [AttendanceController::class, 'wage'])->name('wage');
     Route::get('/user/{user}/day/{day}/attendances', [UserController::class, 'getAttendancesByUserIdAndDay']);
     Route::put('/user/{user}/day/{day}/attendances', [UserController::class, 'updateAttendancesByUserIdAndDay']);
 });

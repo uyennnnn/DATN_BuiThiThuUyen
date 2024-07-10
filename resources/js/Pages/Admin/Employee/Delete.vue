@@ -26,13 +26,13 @@ const back = () => {
     <Head title="Delete employee" />
 
     <div class="text-center mb-3 font-bold">
-      <h4 class="text-[#286fee]">従業員情報削除</h4>
+      <h4 class="text-[#286fee]">XÁC NHẬN XÓA NHÂN VIÊN</h4>
     </div>
 
     <div>
       <div class="grid grid-cols-4 text-sm">
         <div class="col-span-1 text-center border border-gray-200 py-2.5">
-          勤務先
+          Nơi làm việc
         </div>
         <div
           class="col-span-3 text-center border border-gray-200 bg-white py-2.5 font-semibold"
@@ -43,7 +43,7 @@ const back = () => {
 
       <div class="grid grid-cols-4 text-sm">
         <div class="col-span-1 text-center border border-gray-200 py-2.5">
-          従業員名
+          Tên nhân viên
         </div>
         <div
           class="col-span-3 border border-gray-200 bg-white py-2 font-semibold flex justify-center items-center gap-2 text-blue-600"
@@ -57,7 +57,7 @@ const back = () => {
         @click="back"
         class="text-center whitespace-nowrap w-1/2 py-4"
       >
-        キャンセル
+        Hủy
       </LightButton>
 
       <Link
@@ -70,7 +70,7 @@ const back = () => {
           type="submit"
           class="text-center whitespace-nowrap !w-full py-4"
         >
-          削除
+          Xóa
         </DangerButton>
       </Link>
     </div>

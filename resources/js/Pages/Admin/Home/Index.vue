@@ -12,7 +12,7 @@ import { Head, Link } from '@inertiajs/vue3';
 
 const listMenuItems = [
     {
-        name: 'Quản lý cửa hàng',
+        name: 'Cài đặt doanh nghiệp',
         icon: StoreIcon,
         routeName: 'shop.edit',
         disable: false
@@ -23,12 +23,12 @@ const listMenuItems = [
         routeName: 'users.index',
         disable: false
     },
-    {
-        name: 'Tính lương',
-        icon: CurrencyIcon,
-        routeName: '',
-        disable: true
-    },
+    // {
+    //     name: 'Tính lương',
+    //     icon: CurrencyIcon,
+    //     routeName: 'wage',
+    //     disable: false
+    // },
     {
         name: 'Dữ liệu chấm công',
         icon: CalendarIcon,

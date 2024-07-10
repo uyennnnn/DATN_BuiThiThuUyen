@@ -36,7 +36,7 @@ class SendPassword extends Mailable
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '[SpiSpi] パスワード通知',
+            subject: '[SpiSpi] Thông báo mật khẩu',
         );
     }
 

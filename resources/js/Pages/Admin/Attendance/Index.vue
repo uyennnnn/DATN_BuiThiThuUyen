@@ -47,15 +47,17 @@ const form = useForm({
 
 const getAttendanceDetail = async (type = null) => {
   // currentPage.value = 'loader';
+  console.log(inputValue.value);
   const currentLayout = layout.value;
   layout.value = 'loader';
-  textLoading.value = type == 'exportCsv' ? 'データ生成中' : 'データ読み込み中';
+  textLoading.value = type == 'exportCsv' ? 'Đang tạo dữ liệu' : 'Đang tải dữ liệu';
   const response = await fetch('/api/attendance/report?date=' + inputValue.value);
   layout.value = currentLayout;
   if (type) {
     currentPage.value = type == 'exportCsv' ? 'ready-export' : 'select-month';
   }
   const data = await response.json();
+  console.log(data);
   tableData.value = data;
   showTable.value = true;
   selectedDate.value = inputValue.value;
@@ -144,7 +146,7 @@ const displayEditAttendance = () => {
 }
 
 const dateOptions = computed(() => {
-  const dayNamesJapanese = ['日', '月', '火', '水', '木', '金', '土'];
+  const dayNamesVietnamese = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
   const startOfMonth = new Date(dayAttendance.value.getFullYear(), dayAttendance.value.getMonth(), 1);
   const currentDate = new Date();
   const isCurrentMonth = currentDate.getFullYear() === dayAttendance.value.getFullYear() && currentDate.getMonth() === dayAttendance.value.getMonth();
@@ -155,12 +157,12 @@ const dateOptions = computed(() => {
     const dayOfWeek = currentDate.getDay();
     options.push({
       date: format(currentDate, 'yyyy-MM-dd'),
-      label: format(currentDate, 'M月d日', { locale: ja }) + `（${dayNamesJapanese[dayOfWeek]}）`
+      label: `${dayNamesVietnamese[dayOfWeek]}, ${format(currentDate, 'dd')} tháng ${format(currentDate, 'MM')}`
     });
   }
-
   return options;
 });
+
 
 const getAttendancesByUserIdAndDay = async () => {
   if (form.id && form.date_time) {
@@ -217,33 +219,33 @@ watch(
   <AdminAuthenticatedLayout>
     <template v-if="currentPage === 'select-month'">
       <div v-show="layout == 'main-page'">
-        <PageTitle title="勤怠データ" />
+        <PageTitle title="DỮ LIỆU CHẤM CÔNG" />
 
         <div class="flex items-center text-sm gap-1 mt-8 mb-3">
           <div class="text-base text-[#286fee]">•</div>
-          <div>集計月</div>
+          <div>Tháng chấm công</div>
         </div>
 
 
-        <month-picker-input class="!w-[100%] max-w-[400px] text-[0.875rem]" lang="ja"
+        <month-picker-input class="!w-[100%] max-w-[400px] text-[0.875rem]" lang="vi"
           :min-date="new Date(yearShopCreatedAt, monthShopCreatedAt)" :max-date="new Date()"
           @change="changeMonth"></month-picker-input>
 
         <template v-if="inputValue">
           <div class="flex space-x-4 my-4">
             <PrimaryButton class="flex-1 text-center py-4" @click="getAttendanceDetail('showData')">
-              勤怠データ表示
+              Hiển thị dữ liệu chấm công
             </PrimaryButton>
 
             <SecondaryButton class="w-1/2 text-center h-full whitespace-nowrap py-4" @click="fetchCsvData">
-              CSV ダウンロード
+              Download CSV 
             </SecondaryButton>
           </div>
 
           <div v-if="showTable" class="my-9">
             <div class="flex items-center justify-start mt-7 mb-2 font-bold cursor-default"
               @click="displayEditAttendance">
-              <h4 class="text-[#286fee]">勤怠データ修正</h4>
+              <h4 class="text-[#286fee]">Chỉnh sửa dữ liệu chấm công</h4>
               <div v-if="showEditAttendance">
                 <DropdownIcon />
               </div>
@@ -254,7 +256,7 @@ watch(
 
             <div v-if="showEditAttendance">
               <div class="bg-[#e5e5e5] flex border text-sm mt-4">
-                <div class="w-1/4 flex items-center justify-center">従業員名</div>
+                <div class="w-1/4 flex items-center justify-center">Tên nhân viên</div>
                 <div class="w-3/4 bg-[#f8f8f8]">
                   <div class="flex border-[#dddddd] items-center gap-1 sm:gap-3 py-5 px-3 justify-end">
                     <select class="border-[#dddddd] w-2/3 max-w-[240px]" v-model="form.id">
@@ -268,12 +270,12 @@ watch(
 
               <div class="bg-[#e5e5e5] flex border text-sm mt-5">
                 <div class="w-1/4 flex items-center justify-center">
-                  変更日時
+                  Thay đổi thời gian chấm công
                 </div>
                 <div class="w-3/4 bg-[#f8f8f8]">
                   <div class="flex items-center justify-end py-5 px-3 border-t gap-2">
                     <div class="w-1/3 text-end">
-                      日にち
+                      Ngày
                     </div>
                     <select class="border-[#dddddd] w-2/3 max-w-[240px]" v-model="form.date_time">
                       <option v-for="option in dateOptions" :key="option.label" :value="option.date">
@@ -284,14 +286,14 @@ watch(
 
                   <div class="flex items-center justify-end py-5 px-3 border-t gap-2">
                     <div class="w-1/3 text-end">
-                      出勤時間
+                      Thời gian vào làm
                     </div>
                     <TextInput type="time" class="w-2/3 max-w-[240px]" v-model="form.checkIn" />
                   </div>
 
                   <div class="flex items-center justify-end py-5 px-3 border-t gap-2">
                     <div class="w-1/3 text-end">
-                      退勤時間
+                      Thời gian tan làm
                     </div>
                     <TextInput type="time" class="w-2/3 max-w-[240px]" v-model="form.checkOut" />
                   </div>
@@ -301,7 +303,7 @@ watch(
               <div class="mt-7 flex items-center justify-center text-sm pb-8">
                 <SecondaryButton type="submit" class="text-center h-full whitespace-nowrap w-1/2 py-4"
                   @click="updateAttendancesByUserIdAndDay()">
-                  変更を保存
+                  Lưu thay đổi
                 </SecondaryButton>
               </div>
             </div>
@@ -314,15 +316,15 @@ watch(
       </div>
 
       <div class="mt-[11vh] md:mt-[15vh]" v-show="layout == 'success-page'">
-        <PageTitle title="勤怠データ" />
+        <PageTitle title="DỮ LIỆU CHẤM CÔNG" />
 
         <div class="text-center text-sm mt-10 text-gray-600">
-          勤怠データを更新しました。
+          Lưu thành công
         </div>
 
         <div class="flex items-center justify-center mt-7">
           <SecondaryButton class="text-center py-4 !px-14 mt-2" @click="changeLayout('main-page')">
-            勤怠データ
+            Dữ liệu chấm công
           </SecondaryButton>
         </div>
       </div>
@@ -331,13 +333,13 @@ watch(
             <PageTitle title="エラー"/>
 
             <div class="text-center text-sm mt-10 text-gray-600">
-                問題が発生しました <br />
-                再度はじめからお試しください
+              "Đã xảy ra sự cố <br />
+              Vui lòng thử lại"
             </div>
 
             <div class="flex items-center justify-center mt-7">
                 <SecondaryButton class="text-center py-4 !px-14 mt-2" @click="changeLayout('main-page')">
-                    戻る
+                    Quay lại
                 </SecondaryButton>
               </div>
         </div>
@@ -345,7 +347,7 @@ watch(
       <div v-show="layout == 'loader' " class="mt-[11vh] md:mt-[15vh] flex flex-col items-center">
         <Spinner class="mb-10" :text="textLoading"></Spinner>
         <LightButton class="text-center h-full py-4 w-1/4" @click="layout = 'main-page'">
-          キャンセル
+          Hủy
         </LightButton>
       </div>
     </template>
@@ -353,22 +355,22 @@ watch(
     <div v-if="currentPage == 'loader' && layout == 'main-page' " class="mt-[11vh] md:mt-[15vh] flex flex-col items-center">
       <Spinner class="mb-10" :text="textLoading"></Spinner>
       <LightButton class="text-center h-full py-4 w-1/4" @click="currentPage = 'select-month'">
-        キャンセル
+        Hủy
       </LightButton>
     </div>
 
     <template v-if="currentPage === 'ready-export'">
-      <PageTitle title="勤怠データCSVダウンロード" />
+      <PageTitle title="DOWNLOAD CSV DỮ LIỆU CHẤM CÔNG" />
 
-      <AttendanceItem label="勤怠月" text-color="#286fee">{{ selectedDate }}</AttendanceItem>
+      <AttendanceItem label="Tháng chấm công" text-color="#286fee">{{ selectedDate }}</AttendanceItem>
 
       <div class="flex space-x-4 mt-5">
         <LightButton class="text-center h-full py-4 w-1/2" @click="currentPage = 'select-month'">
-          キャンセル
+          Hủy
         </LightButton>
 
         <SecondaryButton class="text-center h-full whitespace-nowrap py-4 w-1/2" @click="exportToExcel">
-          CSV ダウンロード
+          Download CSV 
         </SecondaryButton>
       </div>
     </template>

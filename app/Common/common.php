@@ -9,7 +9,21 @@ if (! function_exists('formatHoursMinutes')) {
         $hours = floor($number / 60);
         $minutes = $number - $hours * 60;
 
-        return $hours.'時間'.$minutes.'分';
+        return $hours.' giờ '.$minutes.' phút ';
+    }
+}
+
+if (! function_exists('formatCurrency')) {
+    function formatCurrency($amount)
+    {
+        return number_format($amount, 0, ',', '.') ;
+    }
+}
+
+if (! function_exists('formatCurrencyWithText')) {
+    function formatCurrencyWithText($amount)
+    {
+        return number_format($amount, 0, ',', '.') . ' VND';
     }
 }
 
@@ -55,6 +69,7 @@ if (! function_exists('formatDate')) {
 }
 
 use App\Models\Option;
+use App\Models\Shop;
 
 if (! function_exists('roundingDateTime')) {
     function roundingDateTime($dateTime)
@@ -97,7 +112,7 @@ if (! function_exists('roundingDateTime')) {
 if (! function_exists('getExpiredBySettingNightStamp')) {
     function getExpiredBySettingNightStamp()
     {
-        $settingNightStamp = Option::get('setting_night_stamp');
+        $settingNightStamp = Shop::getSettingNightStamp();
         if ($settingNightStamp == config('const.SHOP_CONFIG.SETTINNG_NIGHT_STAMP.ON')) {
             $expired = now()->setTime(6, 0, 0);
             if (now() >= $expired) {

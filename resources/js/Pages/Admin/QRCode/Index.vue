@@ -31,23 +31,24 @@ function downloadQR() {
 
     <AdminAuthenticatedLayout>
         <div>
-            <PageTitle title="QRコード"/>
+            <PageTitle title="QR CODE"/>
 
             <div class="text-center text-sm mt-10 text-gray-600">
-                従業員の方のスマートフォンがNFC未対応だった場合に<br>
-                QRダウンロードを行い従業員の方へLINEやメールで送信してください
+                Trong trường hợp điện thoại của nhân viên không hỗ trợ NFC
+                <br>
+                hãy tải xuống mã QR và gửi qua Zalo hoặc email cho nhân viên.
             </div>
             <div class="flex items-center justify-center mt-7 py-4 border border-[#e8e8e8]">
                 <img :src="imageUrl" alt="" title="" width="400" height="400" id="imgQR" />
             </div>
 
             <div class="text-center text-sm mt-10 text-gray-400">
-                ※QRコードは毎日0時に更新されます
+                ※Mã QR sẽ được cập nhật hàng ngày vào lúc 0 giờ.
             </div>
 
             <div class="flex items-center justify-center mt-7">
                 <SecondaryButton @click="downloadQR()" type="submit" class="text-center py-4 !px-14 mt-2" >
-                    QRダウンロード
+                    Tải xuống mã QR
                 </SecondaryButton>
             </div>
 

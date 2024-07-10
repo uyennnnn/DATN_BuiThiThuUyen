@@ -5,7 +5,7 @@ const props = defineProps(['clockHours', 'clockMinutes', 'clockSeconds', 'clockD
 </script>
 
 <template>
-    <div class="flex gap-2 items-center justify-center text-[11px] text-gray-600">
+    <div class="flex gap-2 items-center justify-center text-[14px] text-gray-600">
         <div></div>
         <div>{{ clockDate }}</div>
     </div>

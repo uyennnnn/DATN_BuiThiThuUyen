@@ -20,13 +20,13 @@ class AppServiceProvider extends ServiceProvider
         config(['filesystems.disks.public.root' => storage_path('app/public/').$domain]);
 
         DB::listen(function ($query) {
-            Log::debug(
-                $query->sql,
-                [
-                    'bindings' => $query->bindings,
-                    'time' => $query->time,
-                ]
-            );
+            // Log::debug(
+            //     $query->sql,
+            //     [
+            //         'bindings' => $query->bindings,
+            //         'time' => $query->time,
+            //     ]
+            // );
         });
     }
 

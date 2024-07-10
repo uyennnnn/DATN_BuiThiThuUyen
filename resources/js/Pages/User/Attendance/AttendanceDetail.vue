@@ -20,13 +20,13 @@ const props = defineProps({
 const isButtonDisabled = ref(false);
 
 const timeAttendanceLabel = computed(() => {
-  if(props.type === 'startBreak') return '休憩開始'
+  if(props.type === 'startBreak') return 'Bắt đầu nghỉ giải lao'
 
-  if(props.type === 'endBreak') return '休憩終了'
+  if(props.type === 'endBreak') return 'Kết thúc nghỉ giải lao'
 
-  if(props.type === 'checkOut') return '勤務終了'
+  if(props.type === 'checkOut') return 'Kết thúc làm việc'
 
-  return '勤務開始'
+  return 'Bắt đầu làm việc'
 });
 
 const handleSubmit = (action) => {
@@ -40,11 +40,11 @@ const handleSubmit = (action) => {
     <h4 class="text-[#286fee]">{{ title }}</h4>
   </div>
 
-  <AttendanceItem :label="'勤務先'">{{ shopName }}</AttendanceItem>
-  <AttendanceItem :label="'従業員名'" :textColor="'#286fee'">{{
+  <AttendanceItem :label="'Nơi làm việc'">{{ shopName }}</AttendanceItem>
+  <AttendanceItem :label="'Tên nhân viên'" :textColor="'#286fee'">{{
       userName
     }}</AttendanceItem>
-  <AttendanceItem v-if="type == 'endBreak'" :label="'休憩時間'" :textColor="'#286fee'">
+  <AttendanceItem v-if="type == 'endBreak'" :label="'Thời gian đã nghỉ giải lao'" :textColor="'#286fee'">
     <div>
       {{ totalBreak }}
     </div>
@@ -57,27 +57,27 @@ const handleSubmit = (action) => {
 
   <div class="flex mt-4 py-5 gap-3 justify-center pb-8">
     <LightButton class="text-center whitespace-nowrap w-1/2 py-6" @click="$emit('changePage')">
-      キャンセル
+      HỦY
     </LightButton>
 
     <SecondaryButton v-show="type == 'checkIn'" type="submit" class="text-center whitespace-nowrap w-1/2 py-6"
       :class="{ 'opacity-25': isButtonDisabled }" @click="handleSubmit('checkIn')" :disabled="isButtonDisabled">
-      出勤する
+      BẮT ĐẦU LÀM VIỆC
     </SecondaryButton>
 
     <PrimaryButton v-show="type == 'checkOut'" type="submit" class="text-center whitespace-nowrap w-1/2 py-6"
       :class="{ 'opacity-25': isButtonDisabled }" @click="handleSubmit('checkOut')" :disabled="isButtonDisabled">
-      退勤
+      KẾT THÚC LÀM VIỆC
     </PrimaryButton>
 
     <WarningButton v-show="type == 'startBreak'" type="submit" class="text-center whitespace-nowrap w-1/2 py-6"
       :class="{ 'opacity-25': isButtonDisabled }" @click="handleSubmit('startBreak')" :disabled="isButtonDisabled">
-      休憩開始
+      BẮT ĐẦU NGHỈ GIẢI LAO
     </WarningButton>
 
     <PrimaryButton v-show="type == 'endBreak'" type="submit" class="text-center whitespace-nowrap w-1/2 py-6"
       :class="{ 'opacity-25': isButtonDisabled }" @click="handleSubmit('endBreak')" :disabled="isButtonDisabled">
-      休憩終了
+      KẾT THÚC NGHỈ GIẢI LAO
     </PrimaryButton>
   </div>
 </template>

@@ -2,7 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Models\Option;
+use App\Models\Shop;
 use Illuminate\Auth\Notifications\ResetPassword;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Support\Facades\Lang;
@@ -27,7 +27,7 @@ class ResetPasswordNotification extends ResetPassword
      */
     protected function buildMailMessage($url)
     {
-        $store_name = Option::get('name', 'shop A', request()->getHost());
+        $store_name = Shop::getShopName();
         $user_name = $this->user->name;
         $contact_phrase = $this->user->isAdmin() ? 'お問い合わせより' : '店舗に';
 

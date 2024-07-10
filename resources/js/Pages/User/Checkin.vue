@@ -21,7 +21,7 @@ const props = defineProps({
     </div>
 
     <AttendanceItem :label="'勤務先'">CyBAR planet 新宿歌舞伎町店</AttendanceItem>
-    <AttendanceItem :label="'従業員名'" :textColor="'#286fee'">星熊みなみ</AttendanceItem>
+    <AttendanceItem :label="'Tên nhân viên'" :textColor="'#286fee'">星熊みなみ</AttendanceItem>
     <AttendanceItem :label="'勤務開始'" :textColor="'#286fee'">
         <div>
         2024年3月1日

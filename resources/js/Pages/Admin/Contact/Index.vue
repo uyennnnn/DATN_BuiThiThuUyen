@@ -10,7 +10,7 @@ import { Head, Link } from '@inertiajs/vue3';
     <Head title="Contact" />
 
     <AdminAuthenticatedLayout>
-        <div class="mt-[11vh] md:mt-[15vh]">
+        <!-- <div class="mt-[11vh] md:mt-[15vh]">
             <PageTitle title="お問い合わせ・サポート"/>
 
             <div class="text-center text-sm mt-10 text-gray-600">
@@ -23,7 +23,7 @@ import { Head, Link } from '@inertiajs/vue3';
                     LINE@
                 </SecondaryButton>
             </a>
-        </div>
+        </div> -->
 
     </AdminAuthenticatedLayout>
 </template>

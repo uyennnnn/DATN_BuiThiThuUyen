@@ -6,7 +6,7 @@ import AdminAuthenticatedLayout from "@/Layouts/AdminAuthenticatedLayout.vue";
 import InputError from "@/Components/shared/InputError.vue";
 import TextInput from "@/Components/shared/TextInput.vue";
 import { Head, Link, useForm } from "@inertiajs/vue3";
-import { onMounted, ref, watch } from "vue";
+import { getCurrentInstance, onMounted, ref, watch } from "vue";
 
 const props = defineProps({
   positions: {
@@ -19,7 +19,7 @@ const props = defineProps({
   },
   storeName: {
     type: String,
-    default: "CyBAR planet 新宿歌舞伎町店",
+    default: "Shop A",
   },
 });
 
@@ -78,8 +78,22 @@ const isHolidaySalaryTimeRangeOverlap = ref(null);
 onMounted(() => {
   if (props.user) {
     Object.assign(form, props.user);
+    formatInitialDisplay();
   }
+
 });
+
+function formatInitialDisplay() {
+  form.salary_base.salary = formatCurrency(form.salary_base.salary);
+  form.salary_night.salary = formatCurrency(form.salary_night.salary);
+  form.salary_overtime.salary = formatCurrency(form.salary_overtime.salary);
+  form.holiday_salary_base.salary = formatCurrency(form.holiday_salary_base.salary);
+  form.holiday_salary_night.salary = formatCurrency(form.holiday_salary_night.salary);
+  form.holiday_salary_overtime.salary = formatCurrency(form.holiday_salary_overtime.salary);
+  form.salary_fixed = formatCurrency(form.salary_fixed);
+  form.one_way_travel_expense = formatCurrency(form.one_way_travel_expense);
+}
+
 
 const handleTypeSalaryChange = (type) => {
   if (type === 2 || (form.set_holiday_salary == 1 && type == 1)) {
@@ -178,16 +192,24 @@ const convertSalaryFieldsToNumeric = (salaryFields) => {
 };
 
 const convertToNumeric = (value) => {
-  if (typeof value === "string" && /^[0-9０-９]+$/.test(value)) {
-    return Number(
-      value.replace(/[０-９]/g, (s) =>
-        String.fromCharCode(s.charCodeAt(0) - 65248)
-      )
+  console.log(value);
+  if (typeof value === "string") {
+    // Loại bỏ các dấu chấm dùng để phân cách hàng ngàn
+    let cleanedValue = value.replace(/\./g, '');
+
+    // Chuyển đổi các chữ số Ả Rập đầy đủ thành chữ số thông thường
+    let normalized = cleanedValue.replace(/[０-９]/g, (s) =>
+      String.fromCharCode(s.charCodeAt(0) - 65248)
     );
-  } else {
-    return value;
+
+    // Kiểm tra lại sau khi loại bỏ dấu chấm và chuyển đổi chữ số
+    if (/^[0-9]+$/.test(normalized)) {
+      return Number(normalized);
+    }
   }
+  return value;
 };
+
 
 const submit = () => {
   convertSalaryFieldsToNumeric(form.salary_base);
@@ -318,18 +340,56 @@ const handleValidateTimeRange = async (
     isSalaryTimeRangeOverlap.value = data?.message;
   }
 };
+
+const formatCurrency = (value) => {
+  if (!value) return '';
+  value = value.toString().replace(/\D/g, '');
+  return new Intl.NumberFormat('vi-VN').format(value);
+};
+
+const stripCurrency = (value) => {
+  if (value === null || value === undefined) return '';
+  return value.toString().replace(/[.,\s]/g, ''); // Chuyển đổi value thành chuỗi và xóa bỏ dấu phẩy, chấm và khoảng trắng
+};
+
+
+const currencyDirective = {
+  beforeMount(el, binding, vnode) {
+    el.addEventListener('input', function (e) {
+      let input = e.target.value;
+      input = stripCurrency(input);
+      if (input) {
+        const formattedInput = formatCurrency(input);
+        if (formattedInput !== e.target.value) {
+          e.target.value = formattedInput;
+          vnode.el.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      } else {
+        e.target.value = '';
+        vnode.el.dispatchEvent(new Event('input', { bubbles: true }));
+      }
+    });
+
+    el.style.textAlign = 'right';
+  }
+};
+
+// Registering directive
+const { appContext } = getCurrentInstance();
+appContext.app.directive('currency', currencyDirective);
+
 </script>
 
 <template>
   <Head title="Employee Editor" />
 
   <AdminAuthenticatedLayout>
-    <PageTitle :title="user ? '従業員情報編集' : '従業員新規登録'" />
+    <PageTitle :title="user ? 'SỬA THÔNG TIN NHÂN VIÊN' : 'ĐĂNG KÝ NHÂN VIÊN MỚI'" />
 
     <div class="mt-10" v-if="user">
       <div class="grid grid-cols-4 text-sm">
         <div class="col-span-1 text-center border border-gray-200 py-2.5">
-          勤務先
+          Nơi làm việc
         </div>
         <div
           class="col-span-3 text-center border border-gray-200 bg-white py-2.5 font-semibold"
@@ -340,13 +400,13 @@ const handleValidateTimeRange = async (
 
       <div class="grid grid-cols-4 text-sm">
         <div class="col-span-1 text-center border border-gray-200 py-2.5">
-          従業員名
+          Tên nhân viên
         </div>
         <div
           class="col-span-3 border border-gray-200 bg-white py-2 font-semibold flex justify-center items-center gap-2"
         >
           <div
-            class="text-white text-xs w-[50px] text-center py-[3px] rounded-full"
+            class="text-white text-xs w-[100px] text-center py-[3px] rounded-full"
             :style="`background-color: ${
               getPosition(user.position)?.TAG_COLOR || '#b3b3b3'
             }`"
@@ -360,18 +420,18 @@ const handleValidateTimeRange = async (
 
     <form @submit.prevent="submit">
       <div class="flex mt-8 text-sm">
-        <div class="text-[#286fee]"><b>従業員情報</b></div>
+        <div class="text-[#286fee]"><b>Thông tin nhân viên</b></div>
       </div>
 
       <div class="mt-5">
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
-          <div>本名</div>
+          <div>Họ và tên</div>
         </div>
         <TextInput
           v-model="form.name"
           class="mt-1 block w-full"
-          placeholder="本名"
+          placeholder="Họ và tên"
           :error="form.errors.name"
         />
         <InputError :message="form.errors.name" class="mt-1" />
@@ -380,12 +440,12 @@ const handleValidateTimeRange = async (
       <div class="mt-6">
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
-          <div>お店での名前（スタッフ名）</div>
+          <div>Biệt danh</div>
         </div>
         <TextInput
           v-model="form.full_name"
           class="mt-1 block w-full"
-          placeholder="お店での名前（スタッフ名）"
+          placeholder="Biệt danh"
           :error="form.errors.full_name"
         />
         <InputError :message="form.errors.full_name" class="mt-1" />
@@ -394,7 +454,7 @@ const handleValidateTimeRange = async (
       <div class="mt-6">
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
-          <div>お店での役割（区分）</div>
+          <div>Chức vụ</div>
         </div>
         <select
           v-model="form.position"
@@ -404,7 +464,7 @@ const handleValidateTimeRange = async (
               form.errors.position,
           }"
         >
-          <option value="" selected>お店での役割（区分）</option>
+          <option value="" selected>Chức vụ</option>
           <option
             v-for="option in positions"
             :key="option.NAME"
@@ -419,12 +479,12 @@ const handleValidateTimeRange = async (
       <div class="mt-6">
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
-          <div>メールアドレス</div>
+          <div>Email</div>
         </div>
         <TextInput
           v-model="form.email"
           class="mt-1 block w-full"
-          placeholder="メールアドレス"
+          placeholder="Email"
           :error="form.errors.email"
         />
         <InputError :message="form.errors.email" class="mt-1" />
@@ -433,7 +493,7 @@ const handleValidateTimeRange = async (
       <div v-if="user" class="mt-6">
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
-          <div>現在のパスワード</div>
+          <div>Mật khẩu hiện tại</div>
         </div>
         <TextInput class="mt-1 block w-full" value="*************" disabled />
       </div>
@@ -441,12 +501,12 @@ const handleValidateTimeRange = async (
       <div class="mt-6">
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
-          <div>{{ user ? "新しいパスワード" : "パスワード" }}</div>
+          <div>{{ user ? "Mật khẩu mới" : "Mật khẩu" }}</div>
         </div>
         <TextInput
           v-model="form.password"
           class="mt-1 block w-full"
-          placeholder="パスワード"
+          placeholder="Mật khẩu"
           :error="form.errors.password"
         />
         <InputError :message="form.errors.password" class="mt-1" />
@@ -456,20 +516,20 @@ const handleValidateTimeRange = async (
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
           <div>
-            {{ user ? "新しいパスワード(確認用)" : "パスワード確認用" }}
+            {{ user ? "Mật khẩu mới(Xác nhận)" : "Xác nhận mật khẩu" }}
           </div>
         </div>
         <TextInput
           v-model="form.password_confirmation"
           class="mt-1 block w-full"
-          placeholder="パスワード"
+          placeholder="Mật khẩu"
           :error="form.errors.password_confirmation"
         />
         <InputError :message="form.errors.password_confirmation" class="mt-1" />
       </div>
 
       <div class="flex mt-10 text-sm">
-        <div class="text-[#286fee]"><b>給与設定</b></div>
+        <div class="text-[#286fee]"><b>Cài đặt lương</b></div>
       </div>
 
       <div class="flex gap-20">
@@ -482,7 +542,7 @@ const handleValidateTimeRange = async (
             :checked="form.salary_type === 1"
             @change="handleTypeSalaryChange(1)"
           />
-          <label for="hourlySalary">時間給</label>
+          <label for="hourlySalary">Lương theo giờ</label>
         </div>
 
         <div class="flex items-center text-sm mt-5 gap-1">
@@ -494,25 +554,26 @@ const handleValidateTimeRange = async (
             :checked="form.salary_type === 2"
             @change="handleTypeSalaryChange(2)"
           />
-          <label for="fixedSalary">固定給</label>
+          <label for="fixedSalary">Lương cố định theo ngày</label>
         </div>
       </div>
 
       <div v-if="form.salary_type === 2">
         <div class="bg-[#e5e5e5] flex border text-sm mt-5">
-          <div class="w-1/4 flex items-center justify-center">基本給</div>
+          <div class="w-1/4 flex items-center justify-center">Lương 1 ngày</div>
           <div class="w-3/4 bg-[#f8f8f8]">
             <div class="flex justify-end py-4 px-3 border-t gap-2">
               <div class="mt-1 block w-[70%] max-w-[230px]">
                 <TextInput
                   v-model="form.salary_fixed"
+                  v-currency
                   class="w-full"
                   :error="form.errors.salary_fixed"
                 />
                 <InputError :message="form.errors.salary_fixed" class="mt-1" />
               </div>
 
-              <div class="mt-3">円</div>
+              <div class="mt-3">VND</div>
             </div>
           </div>
         </div>
@@ -526,7 +587,7 @@ const handleValidateTimeRange = async (
         </div>
         <div class="bg-[#e5e5e5] flex border text-sm">
           <div class="w-1/4 flex items-center justify-center text-sm">
-            基本時給
+            Lương cơ bản
           </div>
           <div class="w-3/4 bg-[#f8f8f8]">
             <div class="flex items-center gap-1 sm:gap-3 py-5 px-3 justify-end">
@@ -554,6 +615,7 @@ const handleValidateTimeRange = async (
               <div class="mt-1 block w-[70%] max-w-[230px]">
                 <TextInput
                   v-model="form.salary_base.salary"
+                  v-currency
                   class="w-full"
                   :error="form.errors['salary_base.salary']"
                 />
@@ -562,13 +624,20 @@ const handleValidateTimeRange = async (
                   class="mt-1"
                 />
               </div>
-              <div class="mt-3">円</div>
+              <div class="mt-3">VND</div>
             </div>
           </div>
         </div>
         <div class="bg-[#e5e5e5] flex border text-sm mt-5">
           <div class="w-1/4 flex items-center justify-center">
-            基本時給 <br />（深夜）
+            <div class="flex flex-col items-center justify-center">
+              <p>
+              Lương theo giờ
+              </p> 
+              <b>
+                làm đêm
+              </b>
+            </div>
           </div>
           <div class="w-3/4 bg-[#f8f8f8]">
             <div class="flex items-center gap-1 sm:gap-3 py-5 px-3 justify-end">
@@ -596,6 +665,7 @@ const handleValidateTimeRange = async (
               <div class="mt-1 block w-[70%] max-w-[230px]">
                 <TextInput
                   v-model="form.salary_night.salary"
+                  v-currency
                   class="w-full"
                   :error="form.errors['salary_night.salary']"
                 />
@@ -604,14 +674,21 @@ const handleValidateTimeRange = async (
                   class="mt-1"
                 />
               </div>
-              <div class="mt-3">円</div>
+              <div class="mt-3">VND</div>
             </div>
           </div>
         </div>
 
         <div class="bg-[#e5e5e5] flex border text-sm mt-5">
           <div class="w-1/4 flex items-center justify-center">
-            基本時給 <br />（残業）
+            <div class="flex flex-col items-center justify-center">
+              <p>
+              Lương theo giờ
+              </p> 
+              <b>
+                tăng ca
+              </b>
+            </div>
           </div>
           <div class="w-3/4 bg-[#f8f8f8]">
             <div class="flex items-center gap-1 sm:gap-3 py-5 px-3 justify-end">
@@ -639,6 +716,7 @@ const handleValidateTimeRange = async (
               <div class="mt-1 block w-[70%] max-w-[230px]">
                 <TextInput
                   v-model="form.salary_overtime.salary"
+                  v-currency
                   class="w-full"
                   :error="form.errors['salary_overtime.salary']"
                 />
@@ -647,7 +725,7 @@ const handleValidateTimeRange = async (
                   class="mt-1"
                 />
               </div>
-              <div class="mt-3">円</div>
+              <div class="mt-3">VND</div>
             </div>
           </div>
         </div>
@@ -662,7 +740,7 @@ const handleValidateTimeRange = async (
               :checked="form.set_holiday_salary"
               @click="handleHolidaySalaryChange(true)"
             />
-            <label for="salary_holiday">休日時給設定する</label>
+            <label for="salary_holiday">Cài đặt lương đặc biệt</label>
           </div>
 
           <div class="flex items-center gap-1 text-sm">
@@ -674,7 +752,7 @@ const handleValidateTimeRange = async (
               :checked="!form.set_holiday_salary"
               @click="handleHolidaySalaryChange(false)"
             />
-            <label for="not_salary_holiday">休日時給設定しない</label>
+            <label for="not_salary_holiday">Không cài đặt lương đặc biệt</label>
           </div>
         </div>
 
@@ -692,7 +770,7 @@ const handleValidateTimeRange = async (
             :error="form.errors.set_holiday_salary"
           >
             <div class="flex items-center justify-center">
-              休日時給設定する曜日
+              Ngày áp dụng mức lương đặc biệt
             </div>
 
             <div class="flex gap-6">
@@ -706,7 +784,7 @@ const handleValidateTimeRange = async (
                   :checked="form.set_saturday_salary"
                   :error="form.errors.set_saturday_salary"
                 />
-                <label for="saturday">土</label>
+                <label for="saturday">Thứ 7</label>
               </div>
               <div class="flex items-center gap-1 text-sm">
                 <input
@@ -718,7 +796,7 @@ const handleValidateTimeRange = async (
                   :checked="form.set_sunday_salary"
                   :error="form.errors.set_sunday_salary"
                 />
-                <label for="sunday">日</label>
+                <label for="sunday">Chủ Nhật</label>
               </div>
               <div class="flex items-center gap-1 text-sm">
                 <input
@@ -730,7 +808,7 @@ const handleValidateTimeRange = async (
                   :checked="form.set_celebrate_salary"
                   :error="form.errors.set_celebrate_salary"
                 />
-                <label for="holiday">祝</label>
+                <label for="holiday">Ngày lễ</label>
               </div>
             </div>
           </div>
@@ -753,7 +831,7 @@ const handleValidateTimeRange = async (
             class="bg-[#e5e5e5] flex border text-sm"
             :class="{ 'pointer-events-none': !form.set_holiday_salary }"
           >
-            <div class="w-1/4 flex items-center justify-center">休日時給</div>
+            <div class="w-1/4 flex items-center justify-center">Lương cơ bản theo giờ</div>
             <div class="w-3/4 bg-[#f8f8f8]">
               <div class="flex items-center gap-1 sm:gap-3 py-5 px-3 justify-end">
                 <TextInput
@@ -780,6 +858,7 @@ const handleValidateTimeRange = async (
                 <div class="mt-1 block w-[70%] max-w-[230px]">
                   <TextInput
                     v-model="form.holiday_salary_base.salary"
+                    v-currency
                     class="w-full"
                     :error="form.errors['holiday_salary_base.salary']"
                   />
@@ -788,7 +867,7 @@ const handleValidateTimeRange = async (
                     class="mt-1"
                   />
                 </div>
-                <div class="mt-3">円</div>
+                <div class="mt-3">VND</div>
               </div>
             </div>
           </div>
@@ -804,7 +883,14 @@ const handleValidateTimeRange = async (
             :class="{ 'pointer-events-none': !form.set_holiday_salary }"
           >
             <div class="w-1/4 flex items-center justify-center">
-              休日時給 <br />（深夜）
+              <div class="flex flex-col items-center justify-center">
+              <p>
+              Lương theo giờ
+              </p> 
+              <b>
+                làm đêm
+              </b>
+            </div>
             </div>
             <div class="w-3/4 bg-[#f8f8f8]">
               <div class="flex items-center gap-1 sm:gap-3 py-5 px-3 justify-end">
@@ -832,6 +918,7 @@ const handleValidateTimeRange = async (
                 <div class="mt-1 block w-[70%] max-w-[230px]">
                   <TextInput
                     v-model="form.holiday_salary_night.salary"
+                    v-currency
                     class="w-full"
                     :error="form.errors['holiday_salary_night.salary']"
                   />
@@ -840,7 +927,7 @@ const handleValidateTimeRange = async (
                     class="mt-1"
                   />
                 </div>
-                <div class="mt-3">円</div>
+                <div class="mt-3">VND</div>
               </div>
             </div>
           </div>
@@ -856,7 +943,14 @@ const handleValidateTimeRange = async (
             :class="{ 'pointer-events-none': !form.set_holiday_salary }"
           >
             <div class="w-1/4 flex items-center justify-center">
-              休日時給 <br />（残業）
+              <div class="flex flex-col items-center justify-center">
+              <p>
+              Lương theo giờ
+              </p> 
+              <b>
+                tăng ca
+              </b>
+            </div>
             </div>
             <div class="w-3/4 bg-[#f8f8f8]">
               <div class="flex items-center gap-1 sm:gap-3 py-5 px-3 justify-end">
@@ -884,6 +978,7 @@ const handleValidateTimeRange = async (
                 <div class="mt-1 block w-[70%] max-w-[230px]">
                   <TextInput
                     v-model="form.holiday_salary_overtime.salary"
+                    v-currency
                     class="w-full"
                     :error="form.errors['holiday_salary_overtime.salary']"
                   />
@@ -892,54 +987,9 @@ const handleValidateTimeRange = async (
                     class="mt-1"
                   />
                 </div>
-                <div class="mt-3">円</div>
+                <div class="mt-3">VND</div>
               </div>
             </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex mt-10 text-sm">
-        <div class="text-[#286fee]"><b>交通費設定</b></div>
-      </div>
-
-      <div class="bg-[#e5e5e5] flex border text-sm mt-4">
-        <div class="w-1/4 flex items-center justify-center">最寄駅</div>
-        <div class="w-3/4 bg-[#f8f8f8]">
-          <div class="flex justify-end py-4 px-3 border-t items-center gap-2">
-            <div class="mt-1 block w-[80%] max-w-[270px]">
-                <TextInput
-                v-model="form.nearest_train_station"
-                class="mt-1 block w-full md:max-w-[280px]"
-                :error="form.errors.nearest_train_station"
-                />
-                <InputError
-                    :message="form.errors.nearest_train_station"
-                    class="mt-1"
-                />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <div class="bg-[#e5e5e5] flex border text-sm mt-5">
-        <div class="w-1/4 flex items-center justify-center">
-          交通費<br />(往復)
-        </div>
-        <div class="w-3/4 bg-[#f8f8f8]">
-          <div class="flex justify-end py-4 px-3 border-t gap-2">
-            <div class="mt-1 block w-[70%] max-w-[230px]">
-              <TextInput
-                v-model="form.one_way_travel_expense"
-                class="w-full"
-                :error="form.errors.one_way_travel_expense"
-              />
-              <InputError
-                :message="form.errors.one_way_travel_expense"
-                class="mt-1"
-              />
-            </div>
-            <div class="mt-3">円</div>
           </div>
         </div>
       </div>
@@ -949,7 +999,7 @@ const handleValidateTimeRange = async (
           <LightButton
             class="text-center h-full whitespace-nowrap py-4 !w-full"
           >
-            戻る
+            QUAY LẠI
           </LightButton>
         </Link>
 
@@ -959,7 +1009,7 @@ const handleValidateTimeRange = async (
           :class="{ 'opacity-25': form.processing }"
           :disabled="form.processing"
         >
-          {{ user?.id ? "更新" : "登録" }}
+          {{ user?.id ? "LƯU" : "ĐĂNG KÝ" }}
         </SecondaryButton>
       </div>
     </form>

@@ -3,7 +3,7 @@
 namespace App\Jobs;
 
 use App\Mail\SendPassword;
-use App\Models\Option;
+use App\Models\Shop;
 use App\Models\User;
 use Illuminate\Support\Facades\Mail;
 
@@ -18,9 +18,8 @@ class SendPasswordMailToEmployee extends BaseJob
      *
      * @return void
      */
-    public function __construct($domain, $userId, $password)
+    public function __construct($userId, $password)
     {
-        parent::__construct($domain);
 
         $this->userId = $userId;
         $this->password = $password;
@@ -33,7 +32,7 @@ class SendPasswordMailToEmployee extends BaseJob
     {
         $this->config();
 
-        $storeName = Option::get('name', 'Cute Shop', $this->domain);
+        $storeName = Shop::getShopName();
         $user = User::find($this->userId);
         if (! $user) {
             return;

@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class AttendanceController extends Controller
@@ -29,7 +30,7 @@ class AttendanceController extends Controller
 
     public function report(Request $request)
     {
-        $dayNamesJapanese = ['日', '月', '火', '水', '木', '金', '土'];
+        $dayNamesVietnamese = ['Chủ nhật', 'Thứ hai', 'Thứ ba', 'Thứ tư', 'Thứ năm', 'Thứ sáu', 'Thứ bảy'];
         if ($request->has('date')) {
             $date = Carbon::parse($request->get('date'));
         } else {
@@ -38,11 +39,11 @@ class AttendanceController extends Controller
         $currentYear = $date->year;
         $currentMonth = $date->month;
         $totalDays = $date->daysInMonth;
-        $title = ['役職', '本名', 'スタッフ名', '出勤日数', '合計休憩時間', '合計勤務時間', '日付'];
+        $title = ['Chức vụ', 'Họ và tên', 'Biệt danh', 'Số ngày làm việc', 'Tổng thời gian nghỉ', 'Tổng thời gian làm việc', 'Lương dự kiến', 'Ngày'];
         for ($i = 1; $i <= $totalDays; $i++) {
-            $date1 = Carbon::createFromDate($currentYear, $date->month, $i);
+            $date1 = Carbon::createFromDate($currentYear, $currentMonth, $i);
             $dayOfWeek = $date1->dayOfWeek;
-            $title[] = $currentYear.'年'.$currentMonth.'月'.$i.'日（'.$dayNamesJapanese[$dayOfWeek].'）';
+            $title[] = $dayNamesVietnamese[$dayOfWeek] . ', ' . $i . ' tháng ' . $currentMonth;
         }
 
         $userList = User::where('role', 2)->get();
@@ -51,11 +52,6 @@ class AttendanceController extends Controller
             $user->reportMonth($currentYear, $currentMonth);
             $csvData = $user->csvData();
 
-            // $result = array_filter(array_values(config('const.POSITION')), function ($item) use ($user) {
-            //     return $item['ID'] == $user->position;
-            // });
-            // $positionName = $result[$user->position - 1]['NAME'];
-
             $data = [
                 $user->position,
                 $user->name,
@@ -63,12 +59,43 @@ class AttendanceController extends Controller
                 $user->month_days,
                 formatHoursMinutes($user->month_break_hours),
                 formatHoursMinutes($user->month_working_minutes),
-                ['出勤', '退勤', '休憩', '勤務時間'],
+                formatCurrencyWithText($user->month_salary),
+                ['Giờ vào', 'Giờ tan', 'Thời gian nghỉ', 'Thời gian làm'],
             ];
             $data = array_merge($data, $csvData);
             $attendanceData[] = $data;
         }
 
         return $attendanceData;
+    }
+
+    public function today(){
+        $userList = User::where('role', 2)->get();
+        foreach ($userList as $user) {
+            $data = $user->reportday();
+
+            $attendanceData[] = [
+                'user' => $user,
+                'report' => $data
+            ];
+        }
+        return Inertia::render('Admin/Today/Index', [
+            'attendanceData' => $attendanceData
+        ]);
+    }
+
+    public function wage(){
+        $userList = User::where('role', 2)->get();
+        foreach ($userList as $user) {
+            $data = $user->reportMonth();
+
+            $attendanceData[] = [
+                'user' => $user,
+                'report' => $data
+            ];
+        }
+        return Inertia::render('Admin/Wage/Index', [
+            'attendanceData' => $attendanceData
+        ]);
     }
 }

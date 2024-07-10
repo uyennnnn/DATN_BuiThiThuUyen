@@ -55,7 +55,7 @@ class Attendance extends Model
         $startDate = Carbon::createFromDate($year, $month, 1)->startOfMonth();
         $endDate = Carbon::createFromDate($year, $month, 1)->endOfMonth();
 
-        if (Option::get('setting_night_stamp') == 1) {
+        if (Shop::getSettingNightStamp() == 1) {
             $startDate = Carbon::create($year, $month, 1)->setTime(6, 0, 0);
             $endDate = Carbon::create($year, $month, 1)->setTime(6, 0, 0)->addMonths();
         }

@@ -21,20 +21,21 @@ defineProps({
 
     <AdminAuthenticatedLayout>
         <div class="mt-[11vh] md:mt-[15vh]">
-            <PageTitle v-if="type !== 'delete'" :title="type === 'create' ? '従業員登録' : '従業員情報編集'"/>
+            <PageTitle v-if="type !== 'delete'" :title="type === 'create' ? 'Đăng ký nhân viên' : 'Sửa thông tin nhân viên'"/>
 
             <div
                 v-if="type !== 'delete'"
                 class="text-center text-sm mt-10 text-gray-600 mb-7"
             >
-                {{ type === 'create' ? '登録完了しました' : '更新完了しました' }}
+                {{ type === 'create' ? 'Đăng ký thành công' : 'Sửa thành công' }}
             </div>
 
             <div
                 v-else
                 class="text-center text-lg font-bold mt-10 text-blue-600 mb-5"
             >
-                削除しました
+                <!-- 削除しました -->
+                Đã xóa
             </div>
 
             <Link :href="route('users.index')" class="flex items-center justify-center">
@@ -43,13 +44,15 @@ defineProps({
                     type="submit"
                     class="text-center py-4 !px-12 mt-2"
                 >
-                    従業員管理画面
+                    <!-- 従業員管理画面 -->
+                    Quản lý nhân viên
                 </PrimaryButton>
                 <SecondaryButton
                     v-else
                     class="text-center py-4 !px-14 mt-2"
                 >
-                    従業員一覧
+                    <!-- 従業員一覧 -->
+                    QUản lý nhân viên
                 </SecondaryButton>
             </Link>
         </div>

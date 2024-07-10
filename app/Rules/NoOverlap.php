@@ -2,7 +2,7 @@
 
 namespace App\Rules;
 
-use App\Models\Option;
+use App\Models\Shop;
 use Closure;
 use Illuminate\Contracts\Validation\ValidationRule;
 
@@ -30,18 +30,18 @@ class NoOverlap implements ValidationRule
     {
 
         if ($this->exceedTime()) {
-            $settingNightStamp = Option::get('setting_night_stamp', null, request()->getHost());
+            $settingNightStamp =  Shop::getSettingNightStamp();
             if ($settingNightStamp == config('const.SHOP_CONFIG.SETTINNG_STAMP.ON')) {
-                $fail('深夜の時間設定は6時より前の時間帯を入力してください。');
+                $fail('Vui lòng nhập thời gian trước 6 giờ sáng cho cài đặt thời gian ban đêm.');
             } else {
-                $fail('深夜の時間設定は0時より前の時間帯を入力してください。');
+                $fail('Vui lòng nhập thời gian trước 0 giờ cho cài đặt thời gian ban đêm.');
             }
         }
 
         if ($this->checkTimeOverlap($this->salaryBase, $this->salaryNight) ||
             $this->checkTimeOverlap($this->salaryBase, $this->salaryOvertime) ||
             $this->checkTimeOverlap($this->salaryNight, $this->salaryOvertime)) {
-            $fail('24 時間以内に期間を重複させることはできません。');
+            $fail('Không thể có thời gian trùng lặp trong vòng 24 giờ.');
         }
     }
 
@@ -84,7 +84,7 @@ class NoOverlap implements ValidationRule
 
     public function exceedTime()
     {
-        $settingNightStamp = Option::get('setting_night_stamp', null, request()->getHost());
+        $settingNightStamp = Shop::getSettingNightStamp();
 
         if ($settingNightStamp == config('const.SHOP_CONFIG.SETTINNG_STAMP.ON')) {
             $exceedTime = '05:59:59';

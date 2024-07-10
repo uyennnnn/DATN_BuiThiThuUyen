@@ -21,7 +21,7 @@ const form = useForm({
   shop: {
     name: props.shop_info?.name,
     setting_stamp: props.shop_info?.setting_stamp,
-    setting_night_stamp: props.shop_info?.setting_night_stamp ?? 2,
+    setting_night_stamp: props.shop_info?.setting_night_stamp,
     setting_minute: props.shop_info?.setting_minute,
     rounding_type: props.shop_info?.rounding_type,
   },
@@ -68,6 +68,7 @@ const handleChangeSettingNightStampType = (type) => {
   }
 
   form.shop.setting_night_stamp = type;
+  console.log(form.shop.setting_night_stamp);
 };
 
 const handleChangeRoundingType = (type) => {
@@ -91,17 +92,17 @@ const submit = () => {
   <Head title="Edit Shop" />
 
   <AdminAuthenticatedLayout>
-    <PageTitle title="店舗管理" />
+    <PageTitle title="CÀI ĐẶT DOANH NGHIỆP" />
     <form @submit.prevent="submit">
       <div class="mt-5">
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
-          <div>店舗名</div>
+          <div>Tên cửa hàng</div>
         </div>
         <TextInput
           v-model="form.shop.name"
           class="mt-1 block w-full"
-          placeholder="店舗名"
+          placeholder="Tên cửa hàng"
           :error="form.errors['shop.name']"
         />
         <InputError :message="form.errors['shop.name']" class="mt-1" />
@@ -110,171 +111,51 @@ const submit = () => {
       <div class="mt-5">
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
-          <div>打刻設定</div>
+          <div>Cài đặt thời gian chấm công một ngày</div>
         </div>
         <div class="bg-[#e5e5e5] border text-sm mt-1 py-3 px-3">
           <div>
             <b>
-              設定）設定時間：
-              <span>10</span>分
-              <span class="pl-2">17:05</span>
-              打刻
+              Ví dụ）
             </b>
           </div>
           <div>
-            <b class="text-[#286fee]">切り上げ</b>
-            <span>の場合：</span>
-            <span>出勤時刻</span>
-            <b class="text-[#286fee]">17:10</b>
+            <span>Trường hợp chọn </span>
+            <b class="text-[#286fee]"> 00:00 ~ 24:00 cùng ngày</b>:
+            <span>Thời gian chấm công một ngày từ 00:00 ~ 24:00 <span class="text-[#286fee]">ngày 1/1/2024</span></span>
           </div>
           <div>
-            <b class="text-[#286fee]">切り捨て</b>
-            <span>の場合：</span>
-            <span>出勤時刻</span>
-            <b class="text-[#286fee]">17:00</b>
+            <span>Trường hợp chọn </span>
+            <b class="text-[#286fee]"> 06:00 ngày hôm trước ~ 06:00 ngày hôm sau</b>:
+            <span>Thời gian chấm công một ngày từ 06:00 <span class="text-[#286fee]">ngày 1/1/2024</span>  đến 06:00 <span class="text-[#286fee]">ngày 2/1/2024</span> </span>
           </div>
         </div>
       </div>
 
       <div class="flex gap-9">
         <div class="flex items-center text-sm mt-5 gap-1">
-          <input
-            class="border border-gray-300"
-            type="checkbox"
-            name="allowSettingTime"
-            id="allowSettingTime"
-            :checked="form.shop.setting_stamp == 1"
-            @change="handleChangeSettingStampType(1)"
-          />
-          <label for="allowSettingTime">打刻設定する</label>
+            <input class="border border-gray-300" type="checkbox" id="disableSettingNightStamp"
+                :checked="form.shop.setting_night_stamp == 2" @change="handleChangeSettingNightStampType(2)" />
+            <label for="disableSettingNightStamp">00:00 ~ 24:00 cùng ngày</label>
         </div>
 
         <div class="flex items-center text-sm mt-5 gap-1">
-          <input
-            class="border border-gray-300"
-            type="checkbox"
-            name="disableSettingTime"
-            id="disableSettingTime"
-            :checked="form.shop.setting_stamp == 2"
-            @change="handleChangeSettingStampType(2)"
-          />
-          <label for="disableSettingTime">打刻設定しない</label>
+            <input class="border border-gray-300" type="checkbox" id="allowSettingNightStamp"
+                :checked="form.shop.setting_night_stamp == 1" @change="handleChangeSettingNightStampType(1)" />
+            <label for="allowSettingNightStamp">06:00 ngày hôm trước ~ 06:00 ngày hôm sau</label>
         </div>
-      </div>
 
-      <div class="relative">
-        <div
-          v-if="form.shop.setting_stamp == 2"
-          class="absolute inset-0 bg-[#8b8b8b] opacity-50 pointer-events-none"
-        ></div>
-        <div
-          class="flex gap-7 items-center text-sm mt-5"
-          :class="{ 'pointer-events-none': form.shop.setting_stamp == 2 }"
-        >
-          <div class="flex items-center text-sm gap-1">
-            <select
-              id="countries"
-              v-model="form.shop.setting_minute"
-              class="bg-[#ffffff] border border-gray-300 text-sm rounded-[2px] focus:ring-blue-500 focus:border-blue-500 block"
-            >
-              <option value="5">5</option>
-              <option value="10">10</option>
-            </select>
-
-            <div class="whitespace-nowrap">分単位</div>
-          </div>
-
-          <div class="flex items-center text-sm gap-4">
-            <div class="flex items-center text-sm gap-1">
-              <input
-                class="border border-gray-300"
-                type="checkbox"
-                name="roundUp"
-                id="roundUp"
-                :checked="form.shop.rounding_type == 1"
-                @change="handleChangeRoundingType(1)"
-              />
-              <label for="roundUp">切り上げ</label>
-            </div>
-
-            <div class="flex items-center text-sm gap-1">
-              <input
-                class="border border-gray-300"
-                type="checkbox"
-                name="roundDown"
-                id="roundDown"
-                :checked="form.shop.rounding_type == 2"
-                @change="handleChangeRoundingType(2)"
-              />
-              <label for="roundDown">切り捨て</label>
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="mt-5">
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
-          <div>夜間打刻設定</div>
-        </div>
-        <div class="bg-[#e5e5e5] border text-sm mt-1 py-3 px-3">
-          <div>
-            <b>
-              0時〜6時の間の打刻を...
-            </b>
-          </div>
-          <div>
-            <b class="text-[#286fee]">前日</b>
-            <span>に含む場合：</span>
-            <b>1/2 2:00</b>
-            <span>〜出勤打刻を</span>
-            <b class="text-[#286fee]">1/1</b>
-            <span>として処理</span>
-          </div>
-          <div>
-            <b class="text-[#286fee]">当日</b>
-            <span>に含む場合：</span>
-            <b>1/2 2:00</b>
-            <span>〜出勤打刻を</span>
-            <b class="text-[#286fee]">1/2</b>
-            <span>として処理</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex gap-9 mt-5 bg-[#8b8b8b] opacity-50 pointer-events-none py-2">
-        <div class="flex items-center text-sm gap-1">
-          <input
-            class="border border-gray-300"
-            type="checkbox"
-            id="allowSettingNightStamp"
-            :checked="form.shop.setting_night_stamp == 1"
-            @change="handleChangeSettingNightStampType(1)"
-          />
-          <label for="allowSettingNightStamp">前日に含む</label>
-        </div>
-
-        <div class="flex items-center text-sm gap-1">
-          <input
-            class="border border-gray-300"
-            type="checkbox"
-            id="disableSettingNightStamp"
-            :checked="form.shop.setting_night_stamp == 2"
-            @change="handleChangeSettingNightStampType(2)"
-          />
-          <label for="disableSettingNightStamp">当日に含む</label>
-        </div>
-      </div>
-
-      <div class="mt-5">
-        <div class="flex items-center text-sm gap-1">
-          <div class="text-base text-[#286fee]">•</div>
-          <div>管理者名</div>
+          <div>Tên quản lý</div>
         </div>
         <TextInput
           v-model="form.admin.name"
           class="mt-1 block w-full"
-          placeholder="管理者名"
+          placeholder="Tên quản lý"
           :error="form.errors['admin.name']"
         />
         <InputError :message="form.errors['admin.name']" class="mt-1" />
@@ -283,12 +164,12 @@ const submit = () => {
       <div class="mt-5">
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
-          <div>管理者メールアドレス</div>
+          <div>Email quản lý</div>
         </div>
         <TextInput
           v-model="form.admin.email"
           class="mt-1 block w-full"
-          placeholder="管理者メールアドレス"
+          placeholder="Email quản lý"
           :error="form.errors['admin.email']"
         />
         <InputError :message="form.errors['admin.email']" class="mt-1" />
@@ -297,7 +178,7 @@ const submit = () => {
       <div class="mt-5">
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
-          <div>現在のパスワード</div>
+          <div>Mật khẩu hiện tại</div>
         </div>
         <TextInput class="mt-1 block w-full" value="*************" disabled />
       </div>
@@ -305,12 +186,12 @@ const submit = () => {
       <div class="mt-5">
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
-          <div>新しいパスワード</div>
+          <div>Mật khẩu mới</div>
         </div>
         <TextInput
           v-model="form.admin.password"
           class="mt-1 block w-full"
-          placeholder="パスワード"
+          placeholder="Mật khẩu"
           :error="form.errors['admin.password']"
         />
         <InputError :message="form.errors['admin.password']" class="mt-1" />
@@ -319,30 +200,30 @@ const submit = () => {
       <div class="mt-5">
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
-          <div>新しいパスワード（確認用）</div>
+          <div>Mật khẩu mới（Xác nhận）</div>
         </div>
         <TextInput
           v-model="form.admin.password_confirmation"
           class="mt-1 block w-full"
-          placeholder="パスワード"
+          placeholder="Mật khẩu"
           :error="form.errors['admin.password_confirmation']"
         />
         <InputError :message="form.errors['admin.password']" class="mt-1" />
       </div>
 
-      <div class="mt-5">
+      <!-- <div class="mt-5">
         <div class="flex items-center text-sm gap-1">
           <div class="text-base text-[#286fee]">•</div>
           <div>アカウント作成キー</div>
         </div>
         <TextInput class="mt-1 block w-full" value="*************" disabled />
-      </div>
+      </div> -->
 
-      <div class="mt-7 flex items-center justify-center text-sm">
+      <!-- <div class="mt-7 flex items-center justify-center text-sm">
         <Link :href="route('contact')">
-          <div class="text-[#286fee]">アカウント削除依頼はこちら</div>
+          <div class="text-[#286fee]">Yêu cầu xóa tài khoản ở đây</div>
         </Link>
-      </div>
+      </div> -->
 
       <div class="mt-7 flex items-center justify-center text-sm pb-8">
         <SecondaryButton
@@ -351,7 +232,7 @@ const submit = () => {
           :class="{ 'opacity-25': form.processing }"
           :disabled="form.processing"
         >
-          変更を保存
+          Lưu
         </SecondaryButton>
       </div>
     </form>

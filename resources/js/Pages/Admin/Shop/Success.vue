@@ -11,15 +11,15 @@ import { Head, Link } from '@inertiajs/vue3';
 
     <AdminAuthenticatedLayout>
         <div class="mt-[11vh] md:mt-[15vh]">
-            <PageTitle title="店舗管理"/>
+            <PageTitle title="CÀI ĐẶT DOANH NGHIỆP"/>
 
             <div class="text-center text-sm mt-10 text-gray-600">
-                店舗情報を更新しました。
+                Đã cập nhật thông tin doanh nghiệp
             </div>
 
             <Link :href="route('shop.edit')" class="flex items-center justify-center mt-7">
                 <SecondaryButton class="text-center py-4 !px-14 mt-2">
-                    店舗管理
+                    Cài đặt doanh nghiệp
                 </SecondaryButton>
             </Link>
         </div>

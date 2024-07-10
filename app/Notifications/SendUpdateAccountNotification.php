@@ -2,7 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Models\Option;
+use App\Models\Shop;
 use Illuminate\Bus\Queueable;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
@@ -43,26 +43,26 @@ class SendUpdateAccountNotification extends Notification
      */
     public function toMail(object $notifiable): MailMessage
     {
-        $store_name = Option::get('name', 'shop A', request()->getHost());
+        $store_name = Shop::getShopName();
 
         return (new MailMessage)
-            ->subject('[SpiSpi] パスワード通知')
+            ->subject('[SpiSpi] Thông báo mật khẩu')
             ->line($store_name)
-            ->line($this->name.'様')
-            ->line('SpiSpi勤怠にて'.$this->name.'様のアカウント情報が変更されました。')
-            ->line('ログイン時にはメールアドレスとパスワードが必要になります。')
-            ->line('ログイン時に必要な情報は以下です。')
+            ->line('Xin chào '.$this->name)
+            ->line('Thông tin tài khoản của bạn trên hệ thông chấm công đã được cập nhật.')
+            ->line('Để đăng nhập, bạn cần địa chỉ email và mật khẩu.')
+            ->line('Thông tin đăng nhập cần thiết như sau:')
             ->line('— — — — — — — — —')
-            ->line('【メールアドレス】')
+            ->line('【Email】')
             ->line($this->email)
-            ->line('【パスワード】')
+            ->line('【Mật khẩu】')
             ->line($this->password)
             ->line('— — — — — — — — —')
-            ->line('ご不明な点がございましたら店舗にご連絡ください。')
-            ->line('このご連絡に心当たりがない場合は、このメールを無視してください。')
+            ->line('Nếu có thắc mắc, vui lòng liên hệ với quản lý cửa hàng của bạn.')
             ->line(Lang::get('------------'))
-            ->line('【SpiSpi勤怠】');
+            ->line('【Hệ thống chấm công SpiSpi】');
     }
+
 
     /**
      * Get the array representation of the notification.

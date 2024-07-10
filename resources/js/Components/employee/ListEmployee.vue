@@ -13,7 +13,7 @@ defineProps({
 </script>
 
 <template>
-    <div class="text-center font-semibold">一覧</div>
+    <div class="text-center font-semibold">Danh sách nhân viên</div>
     <EmployeeItem
         v-for="user in users"
         :key="`user-${user.id}`"
@@ -21,3 +21,4 @@ defineProps({
         :positions="positions"
     />
 </template>
+

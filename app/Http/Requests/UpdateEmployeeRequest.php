@@ -71,7 +71,7 @@ class UpdateEmployeeRequest extends FormRequest
                 'boolean',
                 function ($attribute, $value, $fail) {
                     if ($this->input('salary_type') == 1 && $value && $this->input('set_saturday_salary') == 0 && $this->input('set_sunday_salary') == 0 && $this->input('set_celebrate_salary') == 0) {
-                        return $fail('選択してください');
+                        return $fail('Hãy chọn một lựa chọn');
                     }
                 },
             ],
@@ -115,18 +115,18 @@ class UpdateEmployeeRequest extends FormRequest
     public function messages()
     {
         return [
-            'salary_base.salary.required_if' => '時給を入力してください',
-            'position.required' => 'お店での役割を選択してください',
-            'salary_fixed.required_if' => '給与を入力してください',
-            'salary_night.salary.required_with' => '時給を入力してください',
-            'salary_overtime.salary.required_with' => '時給を入力してください',
-            'holiday_salary_base.salary.required_if' => '時給を入力してください',
-            'holiday_salary_night.salary.required_with' => '時給を入力してください',
-            'holiday_salary_overtime.salary.required_with' => '時給を入力してください',
-            'password_confirmation.in' => '上記と同じパスワードを入力してください',
-            'password_confirmation.required' => '上記と同じパスワードを入力してください',
-            'salary_fixed.max' => '入力した金額が大きすぎます',
-            'one_way_travel_expense.max' => '入力した金額が大きすぎます',
+            'salary_base.salary.required_if' => 'Vui lòng nhập lương cơ bản',
+            'position.required' => 'Vui lòng chọn vị trí tại cửa hàng',
+            'salary_fixed.required_if' => 'Vui lòng nhập lương',
+            'salary_night.salary.required_with' => 'Vui lòng nhập lương làm đêm',
+            'salary_overtime.salary.required_with' => 'Vui lòng nhập lương làm thêm',
+            'holiday_salary_base.salary.required_if' => 'Vui lòng nhập lương cơ bản của ngày đặc biệt',
+            'holiday_salary_night.salary.required_with' => 'Vui lòng nhập lương làm đêm của ngày đặc biệt',
+            'holiday_salary_overtime.salary.required_with' => 'Vui lòng nhập lương làm thêm của ngày đặc biệt',
+            'password_confirmation.in' => 'Vui lòng nhập lại mật khẩu giống như trên',
+            'password_confirmation.required' => 'Vui lòng nhập lại mật khẩu để xác nhận',
+            'salary_fixed.max' => 'Số tiền quá lớn',
+            'one_way_travel_expense.max' => 'Số tiền nhập quá lớn',
         ];
     }
 }

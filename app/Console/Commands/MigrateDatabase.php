@@ -30,11 +30,11 @@ class MigrateDatabase extends Command
             $database = request()->getHost();
             config(['database.connections.'.$database => $this->getDatabaseConfig($database)]);
             $this->call('migrate', ['--force' => true, '-n' => true, '--database' => $database]);
-            Log::info($database.' migrated successfully.');
+            // Log::info($database.' migrated successfully.');
 
             return true;
         } catch (\Exception $e) {
-            Log::error($database.' migration failed: '.$e->getMessage());
+            // Log::error($database.' migration failed: '.$e->getMessage());
 
             return false;
         }

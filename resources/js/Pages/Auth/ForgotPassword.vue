@@ -26,11 +26,11 @@ const submit = () => {
     <GuestLayout>
         <Head title="Forgot Password" />
 
-        <PageTitle title="パスワードリセット"/>
+        <PageTitle title="ĐẶT LẠI MẬT KHẨU"/>
 
         <div v-if="form.errors.email" class="text-[12px] text-red-600 text-center mb-3">
-            メールアドレス
-            <span class="text-gray-800">を入力してください</span>
+            <span class="text-gray-800">Vui lòng nhập</span>
+            Email
         </div>
 
         <form @submit.prevent="submit">
@@ -40,7 +40,7 @@ const submit = () => {
                     class="mt-1 block w-full"
                     v-model="form.email"
                     autofocus
-                    placeholder="メールアドレス"
+                    placeholder="Email"
                     :error="form.errors.email"
                 />
             </div>
@@ -50,13 +50,13 @@ const submit = () => {
                     :href="route(userType === 'admin' ? 'login' : 'user.login')"
                     class="text-xs text-[#286fee]"
                 >
-                    ログイン画面に戻る
+                    ĐĂNG NHẬP
                 </Link>
             </div>
 
             <div class="flex items-center justify-center mt-7">
                 <SecondaryButton type="submit" class="text-center py-4 !px-14 mt-2" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
-                    パスワード再発行
+                    Cấp lại mật khẩu
                 </SecondaryButton>
             </div>
         </form>

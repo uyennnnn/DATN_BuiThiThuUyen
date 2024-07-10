@@ -6,8 +6,8 @@ use App\Http\Requests\CreateEmployeeRequest;
 use App\Http\Requests\UpdateEmployeeRequest;
 use App\Jobs\SendPasswordMailToEmployee;
 use App\Models\Attendance;
-use App\Models\Option;
 use App\Models\User;
+use App\Models\Shop;
 use DateTime;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
@@ -28,11 +28,24 @@ class UserController extends Controller
     public function getListUser(Request $request)
     {
         $user = new User();
+        $position = $request->get('position');
+        $search = $request->get('search');
 
         return [
-            'data' => $user->getUsersByPosition($request->get('position')),
+            'data' => $user->getUsersByPosition($position, $search),
         ];
     }
+
+    // public function getListUser(Request $request)
+    // {
+    //     $user = new User();
+
+    //     return [
+    //         'data' => $user->getUsersByPosition($request->get('position')),
+    //     ];
+    // }
+
+
 
     public function create()
     {
@@ -46,8 +59,8 @@ class UserController extends Controller
         $user = User::create($request->all());
         $password = $request->password;
 
-        $domain = request()->getHost();
-        SendPasswordMailToEmployee::dispatch($domain, $user->id, $password);
+        // $domain = request()->getHost();
+        SendPasswordMailToEmployee::dispatch($user->id, $password);
 
         return redirect()->route('users.success', ['type' => 'create']);
     }
@@ -62,12 +75,12 @@ class UserController extends Controller
     public function edit($user_id)
     {
         $user = User::find($user_id);
-        $config = Option::getConfig();
+        $shop = Shop::getShopName();
 
         return Inertia::render('Admin/Employee/Editor', [
             'positions' => config('const.POSITION'),
             'user' => $user,
-            'storeName' => $config['name'] ?? null,
+            'storeName' => $shop ?? null,
         ]);
     }
 
@@ -84,11 +97,11 @@ class UserController extends Controller
     public function delete(Request $request)
     {
         $employee = User::find($request->input('id'));
-        $config = Option::getConfig();
+        $shop = Shop::getShopName();;
 
         return Inertia::render('Admin/Employee/Delete', [
             'employee' => $employee,
-            'storeName' => $config['name'] ?? null,
+            'storeName' => $shop ?? null,
         ]);
     }
 
@@ -103,7 +116,7 @@ class UserController extends Controller
     {
         $query = $user->attendances();
 
-        if (Option::get('setting_night_stamp') == config('const.SHOP_CONFIG.SETTINNG_NIGHT_STAMP.ON')) {
+        if (Shop::getSettingNightStamp() == config('const.SHOP_CONFIG.SETTINNG_NIGHT_STAMP.ON')) {
             $day = date('Y-m-d H:i:s', strtotime($day.' +6 hours'));
         }
 
@@ -137,7 +150,7 @@ class UserController extends Controller
 
         $query = $user->attendances();
 
-        if (Option::get('setting_night_stamp') == config('const.SHOP_CONFIG.SETTINNG_NIGHT_STAMP.ON')) {
+        if (Shop::getSettingNightStamp() == config('const.SHOP_CONFIG.SETTINNG_NIGHT_STAMP.ON')) {
             $day = date('Y-m-d H:i:s', strtotime($day.' +6 hours'));
         }
 
@@ -175,7 +188,7 @@ class UserController extends Controller
     {
         $time = "$day $hourMinute:00";
         $time = strtotime($time);
-        if (Option::get('setting_night_stamp') == config('const.SHOP_CONFIG.SETTINNG_NIGHT_STAMP.ON')) {
+        if (Shop::getSettingNightStamp() == config('const.SHOP_CONFIG.SETTINNG_NIGHT_STAMP.ON')) {
             if (date('H', $time) < 6) {
                 $time += 24 * 3600;
             }

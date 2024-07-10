@@ -14,5 +14,7 @@ Route::group(['prefix' => 'user'], function () {
         Route::get('/nfc', [AttendanceController::class, 'nfc'])->name('nfc');
         Route::get('/attendance', [AttendanceController::class, 'index'])->name('user.attendance');
         Route::post('/attendance', [AttendanceController::class, 'store'])->name('user.attendance.store');
+        Route::get('/attendance/request', [AttendanceController::class, 'request'])->name('request');
+        Route::get('/request/create', [AttendanceController::class, 'requestCreate'])->name('user.attendance.request.create');
     });
 });

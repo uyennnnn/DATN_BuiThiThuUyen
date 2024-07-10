@@ -14,6 +14,8 @@ use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Hash;
 use Laravel\Sanctum\HasApiTokens;
+use Illuminate\Support\Facades\Log;
+
 
 class User extends Authenticatable
 {
@@ -129,7 +131,7 @@ class User extends Authenticatable
 
     private function getStartTimeWithSettingNightStamp()
     {
-        $settingNightStamp = Option::get('setting_night_stamp', null, request()->getHost());
+        $settingNightStamp = Shop::getSettingNightStamp();
         if ($settingNightStamp == config('const.SHOP_CONFIG.SETTINNG_NIGHT_STAMP.ON')) {
             if (now() < now()->setTime(6, 0, 0)) {
                 return now()->subDay(1)->setTime(6, 0, 0);
@@ -215,19 +217,27 @@ class User extends Authenticatable
         $this->notify(new SendUpdateAccountNotification($data['email'], $data['password'], $data['name']));
     }
 
-    public function getUsersByPosition($position)
+    public function getUsersByPosition($position, $search = null)
     {
         $query = $this->employee();
-        if ($position === 'all') {
-            return $query->get();
+    
+        if ($position !== 'all') {
+            $query->where('position', $position);
         }
-
-        return $query->where('position', $position)->get();
+    
+        if ($search) {
+            $query->where(function($q) use ($search) {
+                $q->where('name', 'like', "%{$search}%")
+                  ->orWhere('full_name', 'like', "%{$search}%");
+            });
+        }
+    
+        return $query->get();
     }
-
+    
     private function dayWithSettingNightStamp($dateTime)
     {
-        $settingNightStamp = Option::get('setting_night_stamp', null, request()->getHost());
+        $settingNightStamp = Shop::getSettingNightStamp();
         $dateTime = Carbon::parse($dateTime);
         if ($settingNightStamp == config('const.SHOP_CONFIG.SETTINNG_NIGHT_STAMP.ON') && $dateTime < Carbon::parse(formatDate($dateTime, 'Y-m-d 06:00:00'))) {
             return $dateTime->subDay()->format('Y-m-d');
@@ -238,27 +248,26 @@ class User extends Authenticatable
 
     public function reportMonth($year = null, $month = null)
     {
-        $retval = [];
-        $attendances = $this->attendances()->month($year, $month)->get();
-
-        $days = [];
-        foreach ($attendances as $attendance) {
-            $day = $this->dayWithSettingNightStamp($attendance->date_time);
-            $attendance->date_time = roundingDateTime($attendance->date_time);
-            $days[$day][] = $attendance;
+        $retval = []; // khơi tao mang chua
+        $attendances = $this->attendances()->month($year, $month)->get();  // lấy data chấm công trong phạm vi 1 tháng
+        $days = []; // mảng ngày
+        foreach ($attendances as $attendance) { 
+            $day = $this->dayWithSettingNightStamp($attendance->date_time); // Nếu có làm đêm và thời gian chấm công < 6:00 thì tính là ngày hôm trước
+            // $attendance->date_time = roundingDateTime($attendance->date_time);
+            $days[$day][] = $attendance; // mảng day với dữ liệu chấm công chuẩn theo từng ngày
         }
+        $this->month_salary = 0; // khởi tạo lương tháng
+        $this->month_working_minutes = 0; //khởi tạo thời gian làm việc tháng
+        $this->month_days = 0; // khởi tạo ngày làm việc tháng
 
-        $this->month_salary = 0;
-        $this->month_working_minutes = 0;
-        $this->month_days = 0;
-
-        $firstDayOfMonth = Carbon::create($year, $month, 1)->startOfMonth();
-        $lastDayOfMonth = Carbon::create($year, $month, 1)->endOfMonth();
+        $firstDayOfMonth = Carbon::create($year, $month, 1)->startOfMonth(); // ngày bắt đầu tháng
+        $lastDayOfMonth = Carbon::create($year, $month, 1)->endOfMonth(); // ngày kết thúc tháng
 
         for ($day = $firstDayOfMonth; $day->lte($lastDayOfMonth); $day->addDay()) {
-            $retval[$day->toDateString()] = new Day($day, []);
+            $retval[$day->toDateString()] = new Day($day, []); // tạo mảng rỗng định dạng Y-m-d cho tháng này 
         }
 
+        
         foreach ($days as $day => $checkInData) {
             $dayData = $this->buildDay($day, $checkInData);
 
@@ -290,6 +299,41 @@ class User extends Authenticatable
         return $this->reportMonth()[$date];
     }
 
+    public function getTodayCheckIn($dateTime = null)
+    {
+        if (is_null($dateTime)) {
+            $dateTime = Carbon::now();
+        } else {
+            $dateTime = Carbon::parse($dateTime);
+        }
+        
+        $settingNightStamp = Shop::getSettingNightStamp();
+        
+        $today = $dateTime->format('Y-m-d');
+        $yesterday = $dateTime->subDay()->format('Y-m-d');
+        
+        if ($settingNightStamp == config('const.SHOP_CONFIG.SETTINNG_NIGHT_STAMP.ON')) {
+            $checkIn = $this->attendances()
+                ->where('action_type', 'checkIn')
+                ->where(function ($query) use ($today, $yesterday) {
+                    $query->whereDate('date_time', $today)
+                          ->orWhereDate('date_time', $yesterday);
+                })
+                ->orderBy('date_time', 'desc')
+                ->first();
+        } else {
+            $checkIn = $this->attendances()
+                ->where('action_type', 'checkIn')
+                ->whereDate('date_time', $today)
+                ->orderBy('date_time', 'desc')
+                ->first();
+        }
+    
+        return $checkIn ? $checkIn->date_time : null;
+    }
+    
+
+
     public function attendances()
     {
         return $this->hasMany(Attendance::class);
@@ -304,11 +348,12 @@ class User extends Authenticatable
         ];
 
         $day = new Day($date, $checkInData);
-        $day->parse();
+        $day->parse(); 
         $day->parseRanges();
         $isWeekendOrHoliday = Day::isWeekendOrHoliday($day->day);
 
         if ($isWeekendOrHoliday && $this->set_holiday_salary) {
+            Log::info( $day->day.' là '.$isWeekendOrHoliday);
             $workingHours = [
                 'base' => $day->calculateWorkingHoursPartime($this->holiday_salary_base),
                 'night' => $day->calculateWorkingHoursPartime($this->holiday_salary_night),
@@ -324,8 +369,11 @@ class User extends Authenticatable
 
         $day->workingHours = $workingHours;
         $day->workTime = array_sum($workingHours);
+        
+
         $day->salary = $this->calculateSalary($day, $workingHours);
 
+        
         return $day;
     }
 
@@ -356,29 +404,27 @@ class User extends Authenticatable
     }
 
     private function calculateSalary($day, $workingHours)
-    {
+    {  
         if ($this->salary_type == config('const.SALARY_TYPE.FULLTIME')) {
             return 0;
         }
 
         $salary = 0;
+
         $isWeekendOrHoliday = Day::isWeekendOrHoliday($day->day);
-        if ($isWeekendOrHoliday) {
-            if ($this->checkHolidaySalary($day)) {
+
+        if ($isWeekendOrHoliday && $this->checkHolidaySalary($day)) {
                 $salary = $this->calculateHolidaySalary($workingHours);
-            }
         } else {
             $salary = $this->calculateNormalSalary($workingHours);
         }
+
 
         return floor($salary);
     }
 
     private function checkHolidaySalary($day): bool
     {
-        if (! $this->set_holiday_salary) {
-            return false;
-        }
         $carbonDay = Carbon::parse($day->day);
         $isSaturday = $carbonDay->isSaturday();
         $isSunday = $carbonDay->isSunday();
@@ -393,22 +439,30 @@ class User extends Authenticatable
             return true;
         }
 
+        Log::info ('checkHolidaySalary: '.$carbonDay . ' '.  $isHoliday);
+
+
         return false;
     }
 
     private function calculateNormalSalary($workingHours)
     {
+        // Log::info ('calculateNormalSalary '.json_encode($workingHours));
         $salary = 0;
         if ($workingHours['base']) {
             $salary += $workingHours['base'] / 60 * $this->salary_base['salary'];
+            Log::info('so gio lam '. $workingHours['base']. '  luong mot gio  '.$this->salary_base['salary']. " base ". $salary);   
         }
         if ($workingHours['night']) {
             $salary += $workingHours['night'] / 60 * $this->salary_night['salary'];
+            Log::info("night". $salary);
         }
         if ($workingHours['overtime']) {
             $salary += $workingHours['overtime'] / 60 * $this->salary_overtime['salary'];
+            Log::info("overtime". $salary);
         }
 
+        
         return floor($salary);
     }
 
@@ -417,6 +471,7 @@ class User extends Authenticatable
         $salary = 0;
         if ($workingHours['base']) {
             $salary += $workingHours['base'] / 60 * $this->holiday_salary_base['salary'];
+            Log::info('so gio lam holiday'. $workingHours['base']. '  luong mot gio  '.$this->salary_base['salary']. " base ". $salary);   
         }
         if ($workingHours['night']) {
             $salary += $workingHours['night'] / 60 * $this->holiday_salary_night['salary'];

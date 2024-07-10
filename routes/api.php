@@ -1,6 +1,6 @@
 <?php
 
-use App\Http\Controllers\Admin\AttendanceController;
+use App\Http\Controllers\Admin\AttendanceController as AdminAttendanceController;
 use App\Http\Controllers\CurentTimeController;
 use App\Http\Controllers\ShopController;
 use App\Http\Controllers\ValidateController;
@@ -26,4 +26,5 @@ Route::get('/migrate', [ShopController::class, 'migrate']);
 Route::post('/init', [ShopController::class, 'init']);
 Route::post('/validate/no-overlap', [ValidateController::class, 'noOverlap']);
 Route::get('/current-time', [CurentTimeController::class, 'getCurrentTime']);
-Route::get('attendance/report', [AttendanceController::class, 'report'])->name('report');
+Route::get('attendance/report', [AdminAttendanceController::class, 'report'])->name('report');
+

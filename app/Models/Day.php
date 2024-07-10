@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Carbon\Carbon;
 use HolidayJp\HolidayJp;
+use Illuminate\Support\Facades\Log;
 
 class Day
 {
@@ -40,9 +41,8 @@ class Day
 
     public function parse()
     {
-        $data = $this->data;
+        $data = $this->data; 
         $breakData = [];
-
         foreach ($data as $item) {
             $key = $item->action_type;
             switch ($key) {
@@ -95,7 +95,7 @@ class Day
         $this->ranges = [];
 
         foreach ($data as $item) {
-            if ($item['action_type'] === 'checkIn' || $item['action_type'] === 'endBreak') {
+            if ($item['action_type'] === 'checkIn' || $item['action_type'] === 'endBreak') { 
                 $group = [];
                 $group[] = $item->date_time;
             } else {
@@ -142,7 +142,7 @@ class Day
         }
 
         foreach ($this->ranges as $range) {
-            // \Log::info($range);
+            // Log::info($range);
             if (count($range) != 2) {
                 continue;
             }
@@ -157,7 +157,10 @@ class Day
                 $workingHours = $endWorkingTime->diffInMinutes($startWorkingTime);
                 $totalWorkingHours += $workingHours;
             }
+         
         }
+
+        // Log::info("totalWorkingHours".$totalWorkingHours);
 
         return $totalWorkingHours;
     }
