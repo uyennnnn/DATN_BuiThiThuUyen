@@ -50,7 +50,12 @@ class AttendanceController extends Controller
         $workingTime = convertMinutesToHoursMinutes($user->month_working_minutes);
 
         $breakData = $user->reportDay();
-        $totalWorkingHoursDay = convertMinutesToHoursMinutes(array_sum($breakData->workingHours));
+        // $totalWorkingHoursDay = convertMinutesToHoursMinutes(array_sum($breakData->workingHours));
+        if (is_array($breakData->workingHours)) {
+            $totalWorkingHoursDay = convertMinutesToHoursMinutes(array_sum($breakData->workingHours));
+        } else {
+            $totalWorkingHoursDay = "0"; // Giả sử định dạng giờ:phút
+        }
 
         $todayTotalBreakTime = convertMinutesToHoursMinutes($breakData->breakTime);
         $checkInTime = formatTimeToHoursAndMinutes($user->getTodayCheckIn());
