@@ -45,6 +45,7 @@ Route::middleware(['admin.auth', 'verified'])->group(function () {
         return Inertia::render('Admin/Home/Index');
     })->middleware(['admin.auth', 'verified'])->name('home');
 
+    Route::post('/employee/import', [UserController::class, 'employeeImport'])->name('users.import');
     Route::get('/employee', [UserController::class, 'index'])->name('users.index');
     Route::get('/employee/get-list', [UserController::class, 'getListUser'])->name('users.list');
     Route::get('/employee/create', [UserController::class, 'create'])->name('users.create');
