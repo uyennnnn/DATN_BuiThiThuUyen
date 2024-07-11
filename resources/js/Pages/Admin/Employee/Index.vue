@@ -7,6 +7,10 @@ import ListEmployee from "@/Components/employee/ListEmployee.vue";
 import { Head, Link } from "@inertiajs/vue3";
 import { onMounted, ref, watch } from "vue";
 import axios from "axios";
+import { useToast } from 'vue-toastification';
+
+
+const toast = useToast();
 
 const props = defineProps({
   totalUser: {
@@ -59,6 +63,9 @@ const openFileDialog = () => {
     fileInput.value.click();
 }
 
+const importProgress = ref(0);
+const importing = ref(false);
+
 const handleFileUpload = async (event) => {
     const file = event.target.files[0];
     if (file) {
@@ -66,15 +73,36 @@ const handleFileUpload = async (event) => {
         formData.append('file', file);
 
         try {
-            await axios.post('/employee/import', formData, {
+            importing.value = true;
+            importProgress.value = 0;
+
+            // Fake progress increment
+            const fakeProgressInterval = setInterval(() => {
+                if (importProgress.value < 95) {
+                    importProgress.value += 7;
+                }
+            }, 200);
+
+            const response = await axios.post('/employee/import', formData, {
                 headers: {
                     'Content-Type': 'multipart/form-data'
                 }
             });
+
+            clearInterval(fakeProgressInterval);
+            importProgress.value = 100;
+
             // Refresh the user list or show success message
             getListUser(positionType.value, searchQuery.value);
+            toast.success('Import thành công!');
         } catch (error) {
-            console.error("Failed to upload file", error);
+            console.error("Import lỗi", error);
+            toast.error('Import lỗi!');
+        } finally {
+            importing.value = false;
+            setTimeout(() => {
+                importProgress.value = 0;
+            }, 1000); // Reset progress after 1 second
         }
     }
 }
@@ -112,6 +140,10 @@ const handleFileUpload = async (event) => {
           Đăng ký nhân viên mới
         </SecondaryButton>
       </Link>
+    </div>
+
+    <div v-if="importing" class="w-full bg-gray-200 rounded-full h-4 mb-4">
+      <div :style="{ width: importProgress + '%' }" class="bg-blue-600 h-4 rounded-full transition-all duration-500"></div>
     </div>
 
     <div

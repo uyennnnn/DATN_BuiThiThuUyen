@@ -11,6 +11,8 @@ use App\Models\Shop;
 use DateTime;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\EmployeesImport;
 
 class UserController extends Controller
 {
@@ -70,6 +72,20 @@ class UserController extends Controller
         return Inertia::render('Admin/Employee/Success', [
             'type' => $request->input('type'),
         ]);
+    }
+
+    public function employeeImport(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:csv,txt',
+        ]);
+
+        try {
+            Excel::import(new EmployeesImport, $request->file('file'));
+            return redirect()->route('users.success', ['type' => 'import'])->with('success', 'Employees imported successfully.');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'There was an error importing the file: ' . $e->getMessage());
+        }
     }
 
     public function edit($user_id)
