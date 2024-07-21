@@ -115,12 +115,12 @@ class UpdateEmployeeRequest extends FormRequest
     public function messages()
     {
         return [
-            'salary_base.salary.required_if' => 'Vui lòng nhập lương cơ bản',
+            'salary_base.salary.required_if' => 'Vui lòng nhập lương theo giờ bình thường',
             'position.required' => 'Vui lòng chọn vị trí tại cửa hàng',
             'salary_fixed.required_if' => 'Vui lòng nhập lương',
             'salary_night.salary.required_with' => 'Vui lòng nhập lương làm đêm',
             'salary_overtime.salary.required_with' => 'Vui lòng nhập lương làm thêm',
-            'holiday_salary_base.salary.required_if' => 'Vui lòng nhập lương cơ bản của ngày đặc biệt',
+            'holiday_salary_base.salary.required_if' => 'Vui lòng nhập lương theo giờ bình thường của ngày đặc biệt',
             'holiday_salary_night.salary.required_with' => 'Vui lòng nhập lương làm đêm của ngày đặc biệt',
             'holiday_salary_overtime.salary.required_with' => 'Vui lòng nhập lương làm thêm của ngày đặc biệt',
             'password_confirmation.in' => 'Vui lòng nhập lại mật khẩu giống như trên',

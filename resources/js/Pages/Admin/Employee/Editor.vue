@@ -533,7 +533,7 @@ appContext.app.directive('currency', currencyDirective);
       </div>
 
       <div class="flex gap-20">
-        <div class="flex items-center text-sm mt-5 gap-1">
+        <!-- <div class="flex items-center text-sm mt-5 gap-1">
           <input
             class="border border-gray-300"
             id="hourlySalary"
@@ -543,9 +543,9 @@ appContext.app.directive('currency', currencyDirective);
             @change="handleTypeSalaryChange(1)"
           />
           <label for="hourlySalary">Lương theo giờ</label>
-        </div>
+        </div> -->
 
-        <div class="flex items-center text-sm mt-5 gap-1">
+        <!-- <div class="flex items-center text-sm mt-5 gap-1">
           <input
             class="border border-gray-300"
             id="fixedSalary"
@@ -555,10 +555,10 @@ appContext.app.directive('currency', currencyDirective);
             @change="handleTypeSalaryChange(2)"
           />
           <label for="fixedSalary">Lương cố định theo ngày</label>
-        </div>
+        </div> -->
       </div>
 
-      <div v-if="form.salary_type === 2">
+      <!-- <div v-if="form.salary_type === 2">
         <div class="bg-[#e5e5e5] flex border text-sm mt-5">
           <div class="w-1/4 flex items-center justify-center">Lương 1 ngày</div>
           <div class="w-3/4 bg-[#f8f8f8]">
@@ -577,7 +577,7 @@ appContext.app.directive('currency', currencyDirective);
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <div v-if="form.salary_type === 1">
         <div class="mt-5">
@@ -587,7 +587,7 @@ appContext.app.directive('currency', currencyDirective);
         </div>
         <div class="bg-[#e5e5e5] flex border text-sm">
           <div class="w-1/4 flex items-center justify-center text-sm">
-            Lương cơ bản
+            Lương theo giờ bình thường
           </div>
           <div class="w-3/4 bg-[#f8f8f8]">
             <div class="flex items-center gap-1 sm:gap-3 py-5 px-3 justify-end">
@@ -831,7 +831,7 @@ appContext.app.directive('currency', currencyDirective);
             class="bg-[#e5e5e5] flex border text-sm"
             :class="{ 'pointer-events-none': !form.set_holiday_salary }"
           >
-            <div class="w-1/4 flex items-center justify-center">Lương cơ bản theo giờ</div>
+            <div class="w-1/4 flex items-center justify-center">Lương theo giờ bình thường</div>
             <div class="w-3/4 bg-[#f8f8f8]">
               <div class="flex items-center gap-1 sm:gap-3 py-5 px-3 justify-end">
                 <TextInput
