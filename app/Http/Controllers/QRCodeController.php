@@ -19,7 +19,7 @@ class QRCodeController extends Controller
     {
         $expired = getExpiredBySettingNightStamp();
         $url = URL::temporarySignedRoute(
-            'user.attendance', $expired
+            'nfc', $expired
         );
         $encodedUrl = urlencode($url);
         $imageUrl = "/qrcode/image?url=$encodedUrl";
