@@ -208,6 +208,7 @@ const fetchAttendanceData = async () => {
   try {
     const response = await axios.get("/user/attendance/request?date=2024-7");
     monthData.value = response.data;
+    console.log(response.data);
     isLoading.value = false;
   } catch (error) {
     console.error("Error fetching attendance data:", error);

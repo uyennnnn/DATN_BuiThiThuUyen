@@ -27,33 +27,41 @@ const props = defineProps({
 });
 
 const users = ref([]);
+const currentPage = ref(1);
+const lastPage = ref(1);
+const perPage = ref(10);
 const positionType = ref(props.positionType);
 const searchQuery = ref('');
 const fileInput = ref(null);
 
-watch([positionType, searchQuery], ([newPosition, newSearchQuery], [oldPosition, oldSearchQuery]) => {
+watch([positionType, searchQuery, currentPage], ([newPosition, newSearchQuery, newPage], [oldPosition, oldSearchQuery, oldPage]) => {
     const currentUrl = new URL(window.location.href);
     currentUrl.searchParams.set('position', newPosition);
     currentUrl.searchParams.set('search', newSearchQuery);
+    currentUrl.searchParams.set('page', newPage);
     const newUrl = currentUrl.toString();
     history.replaceState(null, null, newUrl);
 
-    getListUser(newPosition, newSearchQuery);
+    getListUser(newPosition, newSearchQuery, newPage);
 })
 
 onMounted(() => {
-    getListUser(props.positionType, searchQuery.value);
+    getListUser(props.positionType, searchQuery.value, currentPage.value);
 })
 
-const getListUser = async (type, search) => {
+const getListUser = async (type, search, page) => {
     try {
         const { data } = await axios.get(`/employee/get-list`, {
             params: {
                 position: type,
                 search: search,
+                page: page,
+                per_page: perPage.value
             }
         });
-        users.value = data.data;
+        users.value = data.data.data;
+        currentPage.value = data.data.current_page;
+        lastPage.value = data.data.last_page;
     } catch (error) {
         console.error("Failed to fetch user list", error);
     }
@@ -93,7 +101,7 @@ const handleFileUpload = async (event) => {
             importProgress.value = 100;
 
             // Refresh the user list or show success message
-            getListUser(positionType.value, searchQuery.value);
+            getListUser(positionType.value, searchQuery.value, currentPage.value);
             toast.success('Import thành công!');
         } catch (error) {
             console.error("Import lỗi", error);
@@ -106,7 +114,6 @@ const handleFileUpload = async (event) => {
         }
     }
 }
-
 </script>
 
 <template>
@@ -200,5 +207,25 @@ const handleFileUpload = async (event) => {
     <div class="py-8">
       <ListEmployee :users="users" :positions="positions" />
     </div>
+
+    <!-- Phần phân trang -->
+    <div class="flex justify-center mt-4">
+      <button 
+        @click="currentPage > 1 && currentPage-- && getListUser(positionType, searchQuery, currentPage)"
+        :disabled="currentPage === 1"
+        class="px-4 py-2 mx-1 text-sm text-white bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Trước
+      </button>
+      <span class="px-4 py-2 mx-1 text-sm">{{ currentPage }} / {{ lastPage }}</span>
+      <button 
+        @click="currentPage < lastPage && currentPage++ && getListUser(positionType, searchQuery, currentPage)"
+        :disabled="currentPage === lastPage"
+        class="px-4 py-2 mx-1 text-sm text-white bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+      >
+        Sau
+      </button>
+    </div>
+
   </AdminAuthenticatedLayout>
 </template>

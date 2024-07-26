@@ -30,7 +30,19 @@
                     </div>
                 </div>
                 <div class="flex justify-between border-b-2">
-                    <div>Thời gian làm</div>
+                    <div>Giờ làm bình thường</div>
+                    <div class="font-bold">{{ dayData.workingHoursBase }}</div>
+                </div>
+                <div class="flex justify-between border-b-2">
+                    <div>Giờ làm đêm</div>
+                    <div class="font-bold">{{ dayData.workingHoursNight }}</div>
+                </div>
+                <div class="flex justify-between border-b-2">
+                    <div>Giờ làm thêm</div>
+                    <div class="font-bold">{{ dayData.workingHoursOvertime }}</div>
+                </div>
+                <div class="flex justify-between border-b-2">
+                    <div>Tổng giờ làm</div>
                     <div class="font-bold">{{ dayData.workingTime }}</div>
                 </div>
                 <div class="flex justify-between">
@@ -46,6 +58,12 @@
 import { computed } from 'vue';
 import moment from 'moment';
 
+function formatHoursMinutes(minutes) {
+    const hours = Math.floor(minutes / 60);
+    const remainingMinutes = minutes % 60;
+    return `${hours} giờ ${remainingMinutes} phút`;
+}
+
 export default {
     name: "MonthData",
     props: {
@@ -54,34 +72,44 @@ export default {
             required: true,
         },
     },
+    
     computed: {
-        dayEntries() {
-            const dayNames = this.data[0].slice(7); // Lấy tên các ngày trong tháng từ phần tử đầu tiên của mảng data
-            const userData = this.data[1].slice(7); // Lấy dữ liệu của các ngày trong tháng từ phần tử thứ hai của mảng data
+    dayEntries() {
+        const dayNames = this.data[0].slice(7);
+        const userData = this.data[1].slice(7);
 
-            return dayNames.map((dayName, index) => {
-                const dayNumberMatch = dayName.match(/(\d+)/); // Lấy số ngày từ chuỗi bằng regex
-                const dayNumber = dayNumberMatch ? parseInt(dayNumberMatch[0]) : ''; // Nếu tìm thấy số ngày thì chuyển nó thành số nguyên, nếu không thì để trống
-                const dayData = userData[index];
+        const entries = dayNames.map((dayName, index) => {
+            const dayNumberMatch = dayName.match(/(\d+)/);
+            const dayNumber = dayNumberMatch ? parseInt(dayNumberMatch[0]) : '';
+            const dayData = userData[index] || [];
 
-                return {
-                    dayName: dayName.split(',')[0], // Lấy tên ngày (e.g., "Thứ hai")
-                    dayNumber: dayNumber,
-                    checkInTime: dayData[0] || '',
-                    checkOutTime: dayData[1] || '',
-                    breakTime: dayData[2] || '0 giờ 0 phút',
-                    workingTime: dayData[3] || '0 giờ 0 phút'
-                };
-            });
-        },
-        filteredDayEntries() {
-            const yesterday = moment().subtract(1, 'days').date(); // Lấy ngày hôm qua
-            // const yesterday = moment().date(); // Lấy ngày hôm qua
-            return this.dayEntries
-                .filter(entry => entry.dayNumber <= yesterday) // Lọc các ngày từ đầu tháng đến hôm qua
-                .sort((a, b) => b.dayNumber - a.dayNumber); // Sắp xếp theo thứ tự giảm dần về ngày
-        }
+            return {
+                dayName: dayName.split(',')[0],
+                dayNumber: dayNumber,
+                checkInTime: dayData[0] || '',
+                checkOutTime: dayData[1] || '',
+                breakTime: dayData[2] || '0 giờ 0 phút',
+                workingTime: dayData[3] || '0 giờ 0 phút',
+                workingHoursBase: formatHoursMinutes((dayData[6] && dayData[6].base) || 0),
+                workingHoursNight: formatHoursMinutes((dayData[6] && dayData[6].night) || 0),
+                workingHoursOvertime: formatHoursMinutes((dayData[6] && dayData[6].overtime) || 0),
+            };
+        });
+
+        console.log('Day Entries:', entries);
+        return entries;
+    },
+    filteredDayEntries() {
+        const yesterday = moment().subtract(1, 'days').date();
+        const filteredEntries = this.dayEntries
+            .filter(entry => entry.dayNumber <= yesterday)
+            .sort((a, b) => b.dayNumber - a.dayNumber);
+
+        console.log('Filtered Day Entries:', filteredEntries);
+        return filteredEntries;
     }
+}
+
 };
 </script>
 
@@ -101,11 +129,11 @@ export default {
 .day-container::after {
     content: '';
     position: absolute;
-    top: 50%;
+    top: 30%;
     left: 50%;
     transform: translateX(-50%);
     width: 2px;
-    height: 62%;
+    height: 73%;
     background-color: #286fee;
     z-index: 0;
 }

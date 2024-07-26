@@ -32,9 +32,9 @@ class ResetPasswordNotification extends ResetPassword
         $contact_phrase = $this->user->isAdmin() ? 'お問い合わせより' : '店舗に';
 
         return (new MailMessage)
-            ->subject('[SpiSpi] パスワードリセット通知')
+            ->subject('[SpiSpi] Thông báo cập nhật mật khẩu')
             ->line($store_name)
-            ->line($user_name.'様')
+            ->line('Xin chào '.$user_name)
             ->line('SpiSpi勤怠のパスワードリセット手続きが行われました。')
             ->line('以下のリンクよりパスワードの再設定をお願いします。 ')
             ->line('— — — — — — — — —')

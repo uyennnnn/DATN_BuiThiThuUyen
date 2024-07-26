@@ -32,9 +32,10 @@ class UserController extends Controller
         $user = new User();
         $position = $request->get('position');
         $search = $request->get('search');
+        $perPage = $request->get('per_page', 10);
 
         return [
-            'data' => $user->getUsersByPosition($position, $search),
+            'data' => $user->getUsersByPosition($position, $search)->paginate($perPage),
         ];
     }
 

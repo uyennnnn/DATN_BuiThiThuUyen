@@ -220,19 +220,19 @@ class User extends Authenticatable
     public function getUsersByPosition($position, $search = null)
     {
         $query = $this->employee();
-    
+
         if ($position !== 'all') {
             $query->where('position', $position);
         }
-    
+
         if ($search) {
             $query->where(function($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
-                  ->orWhere('full_name', 'like', "%{$search}%");
+                ->orWhere('full_name', 'like', "%{$search}%");
             });
         }
-    
-        return $query->get();
+
+        return $query;
     }
     
     private function dayWithSettingNightStamp($dateTime)
@@ -485,6 +485,11 @@ class User extends Authenticatable
 
     private function buildCsvItem($item)
     {
+        $workingHours = $item->workingHours ?? [
+            'base' => 0,
+            'night' => 0,
+            'overtime' => 0
+        ];
         return [
             $this->formatCsvTime($item->checkIn),
             $this->formatCsvTime($item->checkOut),
@@ -492,9 +497,13 @@ class User extends Authenticatable
             formatHoursMinutes($item->workTime),
             $item->isCheckInEdited,
             $item->isCheckOutEdited,
+            $item->workingHours,
+            $workingHours['base'],
+            $workingHours['night'],
+            $workingHours['overtime']
         ];
     }
-
+    
     public function csvData()
     {
         $data = [];

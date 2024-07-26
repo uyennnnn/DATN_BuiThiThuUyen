@@ -12,7 +12,7 @@ import AttendanceItem from "@/Components/employee/AttendanceItem.vue";
   <UserAuthenticatedLayout>
     <div class="flex-col">
         <div class="text-center mt-10 mb-3 font-bold">
-            <h4 class="text-[#286fee]">打刻完了しました</h4>
+            <h4 class="text-[#286fee]">Chấm công thành công</h4>
         </div>
 
         <div class="flex mt-4 py-5 gap-3 justify-center pb-8">
@@ -21,7 +21,7 @@ import AttendanceItem from "@/Components/employee/AttendanceItem.vue";
             type="submit"
             class="text-center whitespace-nowrap !w-full py-4"
             >
-            勤怠画面
+            Màn hình chấm công
             </PrimaryButton>
         </Link>
         </div>
