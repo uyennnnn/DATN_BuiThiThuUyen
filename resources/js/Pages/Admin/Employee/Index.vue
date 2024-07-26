@@ -33,6 +33,7 @@ const perPage = ref(10);
 const positionType = ref(props.positionType);
 const searchQuery = ref('');
 const fileInput = ref(null);
+const totalUser = ref(props.totalUser);
 
 watch([positionType, searchQuery, currentPage], ([newPosition, newSearchQuery, newPage], [oldPosition, oldSearchQuery, oldPage]) => {
     const currentUrl = new URL(window.location.href);
@@ -64,6 +65,27 @@ const getListUser = async (type, search, page) => {
         lastPage.value = data.data.last_page;
     } catch (error) {
         console.error("Failed to fetch user list", error);
+    }
+}
+
+const getTotalUser = async (type, search, page) => {
+    try {
+        const { data } = await axios.get(`/employee/get-list`, {
+            params: {
+                position: type,
+                search: search,
+                page: page,
+                per_page: perPage.value
+            }
+        });
+        console.log(data);
+        console.log(data.data);
+        console.log(data.data.total);
+        console.log(totalUser);
+        console.log(totalUser.value);
+        totalUser.value = data.data.total;
+    } catch (error) {
+        console.error("Failed to fetch total user count", error);
     }
 }
 
@@ -102,6 +124,7 @@ const handleFileUpload = async (event) => {
 
             // Refresh the user list or show success message
             getListUser(positionType.value, searchQuery.value, currentPage.value);
+            getTotalUser(positionType.value, searchQuery.value, currentPage.value);
             toast.success('Import thành công!');
         } catch (error) {
             console.error("Import lỗi", error);
@@ -135,10 +158,10 @@ const handleFileUpload = async (event) => {
       </button>
 
       <input type="file" ref="fileInput" @change="handleFileUpload" class="hidden" />
-      
+
       <Link :href="route('users.create')">
         <SecondaryButton class="max-w-fit flex items-center text-center justify-center py-4 gap-2 min-w-[285.75px]">
-          <svg fill="#ffffff" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" 
+          <svg fill="#ffffff" version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
               width="20px" height="20px" viewBox="0 0 45.402 45.402" xml:space="preserve">
             <g>
               <path d="M41.267,18.557H26.832V4.134C26.832,1.851,24.99,0,22.707,0c-2.283,0-4.124,1.851-4.124,4.135v14.432H4.141 c-2.283,0-4.139,1.851-4.138,4.135c-0.001,1.141,0.46,2.187,1.207,2.934c0.748,0.749,1.78,1.222,2.92,1.222h14.453V41.27 c0,1.142,0.453,2.176,1.201,2.922c0.748,0.748,1.777,1.211,2.919,1.211c2.282,0,4.129-1.851,4.129-4.133V26.857h14.435 c2.283,0,4.134-1.867,4.133-4.15C45.399,20.425,43.548,18.557,41.267,18.557z"/>
@@ -210,7 +233,7 @@ const handleFileUpload = async (event) => {
 
     <!-- Phần phân trang -->
     <div class="flex justify-center mt-4">
-      <button 
+      <button
         @click="currentPage > 1 && currentPage-- && getListUser(positionType, searchQuery, currentPage)"
         :disabled="currentPage === 1"
         class="px-4 py-2 mx-1 text-sm text-white bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
@@ -218,7 +241,7 @@ const handleFileUpload = async (event) => {
         Trước
       </button>
       <span class="px-4 py-2 mx-1 text-sm">{{ currentPage }} / {{ lastPage }}</span>
-      <button 
+      <button
         @click="currentPage < lastPage && currentPage++ && getListUser(positionType, searchQuery, currentPage)"
         :disabled="currentPage === lastPage"
         class="px-4 py-2 mx-1 text-sm text-white bg-blue-500 rounded disabled:opacity-50 disabled:cursor-not-allowed"
