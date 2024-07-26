@@ -63,7 +63,7 @@ class UserController extends Controller
         $password = $request->password;
 
         // $domain = request()->getHost();
-        // SendPasswordMailToEmployee::dispatch($user->id, $password);
+        SendPasswordMailToEmployee::dispatch($user->id, $password);
 
         return redirect()->route('users.success', ['type' => 'create']);
     }
@@ -106,7 +106,7 @@ class UserController extends Controller
         $user = User::find($user_id);
 
         $user->update($request->all());
-        // $user->sendAccountUpdateNotification($request->all());
+        $user->sendAccountUpdateNotification($request->all());
 
         return redirect()->route('users.success', ['type' => 'update']);
     }

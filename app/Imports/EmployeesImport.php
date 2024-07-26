@@ -80,7 +80,7 @@ class EmployeesImport implements ToModel, WithHeadingRow
         // Create new user with the data
         $user = User::create($data);
 
-        // SendPasswordMailToEmployee::dispatch($user->id, $password);
+        SendPasswordMailToEmployee::dispatch($user->id, $password);
 
         // Return the created user instance
         return $user;
